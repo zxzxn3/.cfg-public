@@ -2,12 +2,12 @@
 set -euo pipefail
 
 # 在另一台机器上直接运行（从 GitHub 取本脚本）：
-#   gh api 'repos/zxzxn3/cfg/contents/deploy.sh' \
+#   gh api 'repos/zxzxn3/.cfg-public/contents/deploy.sh' \
 #     -H 'Accept: application/vnd.github.raw+json' | bash
 # 如果要带参数
 #   ... | bash -s -- -f
 # --- 默认值 -----------------------------
-DEFAULT_REMOTE='https://github.com/zxzxn3/cfg.git'
+DEFAULT_REMOTE='https://github.com/zxzxn3/.cfg-public.git'
 DEFAULT_GIT_DIR="$HOME/.cfg"
 DEFAULT_WORK_TREE="$HOME"
 # 锁不能放 /run/lock（那是 root 的）；XDG_RUNTIME_DIR 本身已按用户隔离
