@@ -1,0 +1,15 @@
+# layout-fade —— 当前窗口里没聚焦的分屏，颜色往黑白去（活动分屏照常）。
+#
+# 单组、事件驱动、无状态：窗口有焦点期间持续生效，失焦时停用——那一刻整窗的变淡
+# 交给 window-fade，两个组因此永远只上色一次。只有一个分屏时等于不生效。
+# 用 active_window_geometry 判断像素在不在活动分屏里，边界是硬的（理由见 fade.slang）。
+# 参数写在组内，理由见 window-fade.pipeline。
+
+startgroup
+    animation_start os-window-focus-in
+    animation_stop os-window-focus-out
+    animation_step 0
+    var float FADE_DESAT 0.45
+    var float FADE_DIM 1.0
+    shaders fade
+endgroup

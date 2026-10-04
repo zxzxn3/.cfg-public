@@ -1,0 +1,10 @@
+[Plymouth Theme]
+Name=Frieren
+Description=Frieren v29: original colors, natural blinks and sleepy nod
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/frieren
+ScriptFile=/usr/share/plymouth/themes/frieren/frieren.script
+Font=Adwaita Sans 12
+MonospaceFont=Adwaita Mono 12

@@ -1,0 +1,69 @@
+// theme: scroll
+// title: 芙莉莲卷轴 / 手调版
+// 原生 Fastfetch 配置：可以直接在 config.jsonc 中修改。
+// style use 切换前会把修改保存回当前主题；style save 可立即保存。
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+
+  // GIF 右下角：left=38 是左侧空出 38 列，top=14 是下移 14 行。
+  // width=22 控制大小，只设宽度保持图片比例；animationFrame=0 保留动画。
+  // position 保持 left；下方文字通过 1G 独立定位，不跟随图片缩进。
+  "logo": {
+    "type": "kitty",
+    "source": "\"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/assets/frieren_v29_fastfetch_transparent.gif\"",
+    "animationFrame": 0,
+    "position": "left",
+    "width": 32,
+    "padding": { "left": 34, "right": 0, "top": 11, "bottom": 0 }
+  },
+
+  // 颜色：keys 是字段名，output 是值；卷边和分组的暖金色写在各行 {#...} 中。
+  "display": {
+    "separator": "·  ",
+    "key": { "type": "string", "width": 0 },
+    "color": {
+      "keys": "38;2;155;143;119",
+      "output": "38;2;221;205;171",
+      "separator": "38;2;160;119;74"
+    },
+    "percent": { "type": ["num"] }
+  },
+
+  // 从上到下就是实际输出；custom 画装饰，其他模块直接读取系统信息。
+  // key 中字段后的空格用来对齐。右侧没有边框，长内容可自然伸出。
+  "modules": [
+    // 每行的 1G 把文字归到第 1 列；GIF 独立放在 Software 右侧。
+    "break",
+    { "type": "title", "format": "\u001b[1G{#38;2;204;168;105}   ╭───────────────────────────────────────╮{#}" },
+    { "type": "custom", "format": "\u001b[1G{#38;2;204;168;105} ╭─╯{#}" },
+    { "type": "title", "format": "\u001b[1G{#38;2;204;168;105} │              {user-name}@{host-name}{#}" },
+    { "type": "custom", "format": "\u001b[1G{#38;2;204;168;105} │{#}" },
+
+    // Hardware
+    { "type": "custom", "format": "\u001b[1G{#38;2;204;168;105} │   ── Hardware ────────────────{#}" },
+    { "type": "cpu",     "key": "\u001b[1G{#38;2;204;168;105} │{#}    CPU      ", "format": "{name}" },
+    // GPU 模块自动逐行列出独显和集显，不在脚本中硬编码名称。
+    { "type": "gpu",     "key": "\u001b[1G{#38;2;204;168;105} │{#}   󰾲 GPU      ", "format": "{name}" },
+    { "type": "memory",  "key": "\u001b[1G{#38;2;204;168;105} │{#}    Memory   ", "format": "{used} / {total}  ({percentage})" },
+    { "type": "disk",    "key": "\u001b[1G{#38;2;204;168;105} │{#}    Disk     ", "folders": "/", "format": "{size-used} / {size-total}  ({size-percentage})" },
+    { "type": "swap",    "key": "\u001b[1G{#38;2;204;168;105} │{#}   󰓡 Swap     ", "format": "{used} / {total}" },
+    { "type": "battery", "key": "\u001b[1G{#38;2;204;168;105} │{#}    Battery  ", "format": "{capacity} / {status}" },
+    { "type": "custom", "format": "\u001b[1G{#38;2;204;168;105} │{#}" },
+
+    // Software
+    { "type": "custom", "format": "\u001b[1G{#38;2;204;168;105} │   ── Software ──────────{#}" },
+    { "type": "os",       "key": "\u001b[1G{#38;2;204;168;105} │{#}    OS       ", "format": "{pretty-name}" },
+    { "type": "kernel",   "key": "\u001b[1G{#38;2;204;168;105} │{#}    Kernel   ", "format": "{release}" },
+    { "type": "wm",       "key": "\u001b[1G{#38;2;204;168;105} │{#}    WM       ", "format": "{pretty-name} {version}" },
+    { "type": "shell",    "key": "\u001b[1G{#38;2;204;168;105} │{#}    Shell    " },
+    { "type": "terminal", "key": "\u001b[1G{#38;2;204;168;105} │{#}    Terminal " },
+    { "type": "packages", "key": "\u001b[1G{#38;2;204;168;105} │{#}   󰏖 Packages ", "format": "{all}" },
+    { "type": "uptime",   "key": "\u001b[1G{#38;2;204;168;105} │{#}    Uptime   ", "format": "{formatted}" },
+    { "type": "custom", "format": "\u001b[1G{#38;2;204;168;105} │{#}" },
+
+    // 卷尾装饰
+    { "type": "custom", "format": "\u001b[1G{#38;2;204;168;105} │{#38;2;160;119;74}              ─ · ❦ · ─{#}" },
+    { "type": "custom", "format": "\u001b[1G{#38;2;204;168;105} ╰─╮{#}" },
+    { "type": "custom", "format": "\u001b[1G{#38;2;204;168;105}   ╰────────────── · ❦{#}" }
+  ]
+}

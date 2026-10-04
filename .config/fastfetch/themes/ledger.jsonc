@@ -1,0 +1,35 @@
+// theme: ledger
+// title: 右上 GIF，左侧编号目录，底部三栏信息。
+// 原生模块，无 command / Python。直接修改 format、颜色与定位列即可。
+// \u001b[NG = 终端第 N 列；\u001b[1A = 上移一行，与上一模块并排。
+// GIF 使用左侧定位；请在约 96 列以上的 Kitty 窗口浏览。
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {"type": "kitty", "source": "\"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/assets/frieren_v29_fastfetch_transparent.gif\"", "animationFrame": 0, "position": "left", "width": 22, "padding": {"left": 65, "right": 0, "top": 0}},
+  "display": {"separator": "", "key": {"type": "none"}, "color": {"output": "38;2;215;222;232"}, "percent": {"type": ["num", "bar"]}, "bar": {"width": 12, "char": {"elapsed": "━", "total": "·"}, "border": {"left": "", "right": ""}}},
+  "modules": [
+    {"type": "custom", "format": "\u001b[3G{#38;2;221;148;182}S Y S T E M   /   0 1{#}"},
+    {"type": "title", "format": "\u001b[3G{user-name}@{host-name}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;221;148;182}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{#}"},
+    {"type": "os", "format": "\u001b[3G{#38;2;221;148;182}01   OS         {#38;2;215;222;232}{pretty-name}{#}"},
+    {"type": "kernel", "format": "\u001b[3G{#38;2;221;148;182}02   Kernel     {#38;2;215;222;232}{release}{#}"},
+    {"type": "wm", "format": "\u001b[3G{#38;2;221;148;182}03   Desktop    {#38;2;215;222;232}{pretty-name} {version}{#}"},
+    {"type": "shell", "format": "\u001b[3G{#38;2;221;148;182}04   Shell      {#38;2;215;222;232}{pretty-name}{#}"},
+    {"type": "terminal", "format": "\u001b[3G{#38;2;221;148;182}05   Terminal   {#38;2;215;222;232}{pretty-name}{#}"},
+    {"type": "custom", "format": "\u001b[1G{#38;2;221;148;182}{#}"},
+    {"type": "cpu", "format": "\u001b[3G{#38;2;221;148;182}06   CPU        {#38;2;215;222;232}{name}{#}"},
+    {"type": "gpu", "format": "\u001b[3G{#38;2;221;148;182}07   GPU        {#38;2;215;222;232}{name}{#}"},
+    {"type": "memory", "format": "\u001b[3G{#38;2;221;148;182}08   Memory     {#38;2;215;222;232}{used} / {total}{#}"},
+    {"type": "disk", "format": "\u001b[3G{#38;2;221;148;182}09   Root       {#38;2;215;222;232}{size-used} / {size-total}{#}", "folders": "/"},
+    {"type": "custom", "format": "\u001b[1G{#38;2;221;148;182}{#}"},
+    {"type": "custom", "format": "\u001b[1G{#38;2;221;148;182}{#}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;221;148;182}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{#}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;221;148;182}UPTIME{#}"},
+    {"type": "custom", "format": "\u001b[1A\u001b[32G{#38;2;221;148;182}CPU CORES{#}"},
+    {"type": "custom", "format": "\u001b[1A\u001b[62G{#38;2;221;148;182}BATTERY{#}"},
+    {"type": "uptime", "format": "\u001b[3G{days}d {hours}h {minutes}m"},
+    {"type": "cpu", "format": "\u001b[1A\u001b[32G{cores-physical}C / {cores-logical}T"},
+    {"type": "battery", "format": "\u001b[1A\u001b[62G{capacity} · {status}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;105;117;135}─────────────────────────────────────────────────────────────────────────────────────{#}"}
+  ]
+}

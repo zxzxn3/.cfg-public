@@ -1,0 +1,67 @@
+# 白名单式：先全忽略，再逐条放行要跟走的路径。
+# `!*/` 让 git 能进入目录，`/*/` 再把 $HOME 下的顶层目录挡掉，
+# 因此下面每条放行都写全路径。
+*
+!*/
+/*/
+
+# 任何层级的 .gitignore 本身都跟走（嵌套的规则文件要能 add）
+!.gitignore
+!/.gitconfig
+!/.gitattributes
+!/deploy.sh
+!/README.md
+
+!/.config/
+!/.config/autostart/*.desktop
+!/.config/fcitx5/conf/classicui.conf
+!/.config/fish/functions/cfg.fish
+!/.config/fish/functions/cx.fish
+!/.config/fish/functions/kb.fish
+!/.config/hypr/
+!/.config/hypr/hyprland.lua
+!/.config/hypr/hyprland-gui.lua
+!/.config/hypr/hyprland-custom.lua
+!/.config/hypr/hypridle.conf
+!/.config/hypr/hyprlock.conf
+
+# hyprlock 的 logo 与背景（hyprlock.conf 按 ~/.config/hypr/assets/hyprlock/
+# 引用）；同目录其余 png 是试色废件和截图，不放行。
+!/.config/hypr/assets/hyprlock/15_frieren_front_facing_transparent.png
+
+!/.config/juhradial/config.json
+!/.config/kitty/**
+!/.config/syncthingtray.ini
+!/.config/uwsm/env.d/fcitx
+!/.config/zellij/layouts/**
+!/.config/newsboat/urls
+
+# fastfetch：手写 config.jsonc、主题、切换脚本和 logo 素材都得跟着；缺了会退回默认 ASCII art。
+!/.config/fastfetch/
+!/.config/fastfetch/**
+# 备份与 Python 字节码是本地运行产物，不入库。
+/.config/fastfetch/backups/
+/.config/fastfetch/scripts/__pycache__/
+
+!/.local/
+/.local/*/
+!/.local/share/
+/.local/share/*/
+
+# noctalia 的 state 层只跟 settings.toml（GUI 写的覆盖层，drop-in 替代不了）；
+# 同目录其余文件（通知历史、统计、缩略图缓存）都是运行产物。
+!/.local/state/
+/.local/state/*/
+!/.local/state/noctalia/
+/.local/state/noctalia/*/
+!/.local/state/noctalia/settings.toml
+
+# 独立项目各带一份 .gitignore。这里只放行目录本身，够 git 进去读它们的规则就行，
+# 内容规则归项目自己管；DeepSeek 的 .codex 由项目规则排除，Archives 不放行。
+!/.local/share/bootstrap/
+!/.local/share/codex-deepseek/
+
+!/.local/share/fcitx5/
+!/.local/share/fcitx5/themes/**
+!/.local/share/fcitx5/rime/*.custom.yaml
+!/.local/share/fcitx5/rime/my_phrase.txt

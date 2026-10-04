@@ -1,0 +1,16 @@
+# window-fade —— 这个 OS 窗口失去焦点时，整窗的颜色往黑白去；重新聚焦立刻恢复。
+#
+# 单组、事件驱动、无状态。animation_step 0 = 不申请周期帧，只在别的原因触发重绘时
+# 跟着走；焦点变化本身就会触发重绘，所以效果立刻出现，空闲时零开销。
+# 参数必须写在组内（group-level var）而不是管线顶层——管线级 var 是全局按名字替换的。
+
+startgroup
+    animation_start os-window-focus-out
+    animation_stop os-window-focus-in
+    animation_step 0
+    var bool WHOLE_WINDOW true
+    # 0.20 太淡（白字不受影响，只有彩色内容会变）；0.50 确认过"正常"。
+    var float FADE_DESAT 0.45
+    var float FADE_DIM 1.0
+    shaders fade
+endgroup

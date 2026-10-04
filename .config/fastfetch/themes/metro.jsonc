@@ -1,0 +1,242 @@
+// theme: metro
+// title: 地铁线路 / 系统换乘图
+// layout: {"rows": 36, "columns": 78}
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "source": "\"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/assets/frieren_v29_fastfetch_transparent.gif\"",
+    "type": "kitty",
+    "animationFrame": 0,
+    "width": 62,
+    "position": "auto",
+    "padding": {
+      "left": 1,
+      "right": 4,
+      "top": 2
+    }
+  },
+  "display": {
+    "separator": "",
+    "key": {
+      "type": "none"
+    }
+  },
+  "modules": [
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 0"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 1"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 2"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 3"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 4"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 5"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 6"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 7"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 8"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 9"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 10"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 11"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 12"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 13"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 14"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 15"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 16"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 17"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 18"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 19"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 20"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 21"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 22"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 23"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 24"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 25"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 26"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 27"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 28"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 29"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 30"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 31"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 32"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 33"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 34"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" metro 35"
+    }
+  ]
+}

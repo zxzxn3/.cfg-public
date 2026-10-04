@@ -1,0 +1,19 @@
+# 个人追加补丁：只影响 rime_ice 方案，不修改任何原文件。
+# RIME 部署时会自动把本文件合并进 rime_ice.schema.yaml。
+#
+# 作用：新增一个独立的个人短语表 my_phrase.txt（与雾凇自带的
+# custom_phrase.txt 并存）。
+#
+# 用官方的 @next 指令在 engine/translators 列表末尾追加一个翻译器。
+# （注意：不能用 @append，它不是 RIME 的语法。）
+patch:
+  "engine/translators/@next": table_translator@my_phrase
+
+  # 定义个人短语翻译器
+  my_phrase:
+    dictionary: ""
+    user_dict: my_phrase          # 对应 my_phrase.txt
+    db_class: stabledb            # 只读数据库，和默认 custom_phrase 行为一致
+    enable_completion: false
+    enable_sentence: false
+    initial_quality: 99           # 与默认 custom_phrase 相同，置顶权重

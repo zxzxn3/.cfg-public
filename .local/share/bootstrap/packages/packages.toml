@@ -1,0 +1,174 @@
+# What this machine wants installed, grouped by what it is for.
+#
+# This is the actionable list: installer.py reads it. The source is deliberately
+# not recorded here, because the installer resolves it at run time and the
+# answer changes as packages move between the repositories and the AUR:
+#
+#   pacman -Si NAME   repository package
+#   pacman -Sg NAME   repository group (fcitx5-im is a group, not a package)
+#   neither           AUR, installed with yay
+#
+# The repository order in /etc/pacman.conf decides which repository wins when
+# several provide the same name: cachyos > arch > chaotic-aur.
+#
+# Group keys: name, description, selected (pre-tick it), packages.
+# A package is either a bare name, or a table with:
+#   name    - the package or group name
+#   source  - "repo", "group" or "aur": what to believe when neither the
+#             repositories nor the AUR turn the name up, so it cannot fight
+#             an answer the system did give
+#   note    - a tooltip; use it for provenance the name does not carry
+# A name may not be listed twice: the installer counts names while a group
+# row counts its own entries, so a repeat would make the two disagree.
+# Unknown keys are an error, so a typo cannot silently do nothing.
+
+[[group]]
+name = "Input method"
+description = "Fcitx5 with the Rime engine, plus the Chinese dictionaries."
+packages = [
+    { name = "fcitx5-im", note = "repository group: fcitx5, configtool, gtk and qt" },
+    "fcitx5-rime",
+    "fcitx5-input-counter",
+]
+
+[[group]]
+name = "Fonts"
+description = "Programming and CJK fonts, including the Nerd Fonts patches."
+packages = [
+    "ttf-jetbrains-mono",
+    "ttf-jetbrains-mono-nerd",
+    "ttf-lxgw-wenkai",
+    "ttf-monocraft-nerd",
+]
+
+[[group]]
+name = "Terminal"
+description = "Terminal emulator and multiplexers."
+packages = [
+    { name = "kitty-git", note = "replaces the kitty the Hyprland netinstall group brings in" },
+    "tmux",
+    "zellij",
+    "tree",
+    "time",
+]
+
+[[group]]
+name = "Browsers"
+description = "Web browsers."
+packages = [
+    "brave-origin-bin",
+    "firefox-pure",
+]
+
+[[group]]
+name = "Mail"
+description = "Mail clients."
+packages = [
+    { name = "betterbird-bin", note = "Thunderbird rebuild, CachyOS repository only" },
+]
+
+[[group]]
+name = "Chat"
+description = "Messengers and IRC."
+packages = [
+    "discord",
+    "linuxqq",
+    "wechat-universal-bwrap",
+    "weechat",
+]
+
+[[group]]
+name = "Media & audio"
+description = "Players, the music client and the audio effect stack."
+packages = [
+    "mpv",
+    "netease-cloud-music-gtk4",
+    "easyeffects",
+    { name = "lsp-plugins-lv2", note = "optional dependency of easyeffects: EQ, compressor, loudness" },
+]
+
+[[group]]
+name = "Development"
+description = "Editors, CLIs and coding agents."
+packages = [
+    "vscodium",
+    "shader-slang",
+    "github-cli",
+    "lazygit",
+    "git-filter-repo",
+    "openai-codex",
+    "opencode",
+]
+
+[[group]]
+name = "Documents"
+description = "Notes, reading and reference."
+packages = [
+    "obsidian",
+    "zotero",
+    "arch-wiki-docs",
+]
+
+[[group]]
+name = "Security"
+description = "Password manager."
+packages = [
+    "keepassxc",
+]
+
+[[group]]
+name = "Network"
+description = "Proxy and VPN client."
+packages = [
+    { name = "clash-verge-rev", note = "supersedes the installed clash-verge-rev-bin; pacman will ask to swap it" },
+]
+
+[[group]]
+name = "Sync & phone"
+description = "File sync and phone integration."
+packages = [
+    "syncthing",
+    "syncthingtray-qt6",
+    "kdeconnect",
+]
+
+[[group]]
+name = "Peripherals"
+description = "Keyboards, mice and headsets."
+packages = [
+    "solaar",
+    "sony-device-center",
+    "bluetuith-bin",
+    { name = "wayvibes-git", note = "AUR; mechanical keyboard sounds while typing" },
+]
+
+[[group]]
+name = "Desktop (Hyprland)"
+description = "Session pieces the Hyprland netinstall group does not bring."
+packages = [
+    "hypridle",
+    "hyprlock",
+    { name = "sane-break", note = "AUR; Qt/Wayland break reminder" },
+    { name = "hyprmod", note = "AUR" },
+]
+
+[[group]]
+name = "System"
+description = "The AUR helper. The installer itself needs nothing but Python."
+packages = [
+    { name = "yay", note = "builds every AUR entry in this list" },
+]
+
+[[group]]
+name = "Toys"
+description = "Novelty programs. Nothing here is needed."
+packages = [
+    "cowsay",
+    "lolcat",
+    "misfortune",
+    "genact",
+    "nyancat",
+    "sl",
+    "toilet",
+    { name = "cbonsai", note = "AUR; bonsai tree generator" },
+]

@@ -1,0 +1,34 @@
+# star-hash —— 哈希星场背景（"格子哈希撒星星"，见 star-hash.slang 顶部）
+#
+# 单组、单趟、无状态：只在背景像素上叠星点，字一个像素都不碰。
+# ⚠ 和另外三个背景互斥，位置见 README 的「顺序与互斥」。
+
+# ── 六个旋钮，都在下面的组里 ──
+# 前四个管"近景层"（也是主体）：
+#   STAR_CELL     格子边长（像素）。越小星越密（26 px 约等于 1/18 屏宽一格）
+#   STAR_DENSITY  有多大比例的格子有星（0.35 = 三成格子有星）
+#   STAR_BRIGHT   最亮的星亮度（线性，直接叠在背景上；0.55 已经相当亮）
+#   STAR_SPEED    漂移速度（像素/秒），0.0 = 完全静止（那就可以把 animation_step 设 0）
+#                 密度和亮度不影响性能；速度超过 ~2 px/帧就开始看出跳。
+# 后两个管"远景层"，也就是视差：
+#   STAR_FAR_SCALE  远景层的格子/半径/亮度比例。0.55 = 比近景细一半、暗一半
+#   STAR_FAR_SPEED  远景层的速度比例 —— **视差强度就是它**：
+#                   1.0 = 两层同速（等于没有视差），0.35 默认，
+#                   0.0 = 远景层完全不动（像贴在墙上的背景板）
+#
+# 星点半径、冷暖白、大尺度疏密在 star-hash.slang 顶部。
+
+# 声明但不用：让命名纹理在启动时就存在，切换背景时纹理集合不变。
+textures a
+
+startgroup
+    # 60fps + 120px/s（每帧 2 像素）。再快得连 repaint_delay 一起改。
+    animation_step 16
+    var float STAR_CELL 26.0
+    var float STAR_DENSITY 0.35
+    var float STAR_BRIGHT 0.55
+    var float STAR_SPEED 120.0
+    var float STAR_FAR_SCALE 0.55
+    var float STAR_FAR_SPEED 0.35
+    shaders star-hash
+endgroup

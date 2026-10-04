@@ -1,0 +1,27 @@
+// 三个 Codex 面板：第一个接续最近会话，另两个打开会话选择器。
+// --all 让选择器不按当前目录过滤，跨项目的会话都能看到。
+// 自定义 layout 会完全替换默认 layout，所以自带的上/下两个 bar 必须在这里显式写回来，
+// 否则 tab 栏和底部状态栏（Ctrl + g p t n h s o q 那排提示）都不会显示。
+layout {
+    pane size=1 borderless=true {
+        plugin location="zellij:tab-bar"
+    }
+
+    pane split_direction="vertical" {
+        pane name="codex-1" focus=true command="codex" {
+            args "resume" "--last"
+        }
+        pane split_direction="horizontal" {
+            pane name="codex-2" command="codex" {
+                args "resume" "--all"
+            }
+            pane name="codex-3" command="codex" {
+                args "resume" "--all"
+            }
+        }
+    }
+
+    pane size=1 borderless=true {
+        plugin location="zellij:status-bar"
+    }
+}

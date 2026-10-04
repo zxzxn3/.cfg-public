@@ -1,0 +1,61 @@
+# Newsboat 订阅列表：每行 URL 后可附标签；以 # 开头的是注释。
+# 修改后按 R 重新加载。
+
+# 中文新闻
+https://www.chinanews.com.cn/rss/scroll-news.xml "中文" "通讯社" "滚动"
+https://www.chinanews.com.cn/rss/world.xml "中文" "通讯社" "国际"
+https://www.chinanews.com.cn/rss/finance.xml "中文" "通讯社" "财经"
+https://www.chinanews.com.cn/rss/society.xml "中文" "通讯社" "社会"
+
+# 个人技术博客
+https://blog.miguelgrinberg.com/feed "博客" "Python" "Flask"
+https://playtechnique.io/rss.xml "博客" "工程"
+https://blog.kowalczyk.info/atom.xml "博客" "工程"
+https://lisyarus.github.io/blog/feed "博客" "图形学"
+https://coffeeaddict.dev/rss.xml "博客" "编程"
+https://koolcodez.com/rss.xml "博客" "编程"
+https://ieatbugsforbreakfast.com/feed/ "博客" "设计"
+https://rdegges.com/feed.xml "博客" "Python"
+https://org.coloradomesa.edu/~mapierce2/feed "博客" "数学"
+https://dave.autonoma.ca/dave/news/blog.rss "博客" "排版"
+
+# 博客存档
+https://robobunny.com/wp/?feed=rss2 "博客" "工程"
+https://powershellexplained.com/feed.xml "博客" "PowerShell"
+https://zhangyuqing.github.io/index.xml "博客" "中文"
+https://chrislesage.com/feeds/all.atom.xml "博客" "写作"
+
+# 机器学习
+https://www.brandonrohrer.com/feed.xml "博客" "机器学习"
+
+# 博客存档
+https://blog.cleancoder.com/atom.xml "博客" "工程"
+
+# 学术期刊
+https://www.nature.com/nature.rss "学术" "Nature"
+https://www.nature.com/subjects/physics.rss "学术" "Nature" "物理"
+https://www.nature.com/nnano.rss "学术" "Nature" "纳米"
+https://www.nature.com/nbt.rss "学术" "Nature" "生物技术"
+https://www.science.org/rss/news_current.xml "学术" "Science" "新闻"
+https://www.science.org/rss/current.xml "学术" "Science" "论文"
+
+# arXiv
+https://rss.arxiv.org/rss/cs.AI "学术" "arXiv" "AI"
+https://rss.arxiv.org/rss/cs.LG "学术" "arXiv" "机器学习"
+
+# Arch Linux
+https://archlinux.org/feeds/news/ "Linux" "Arch" "新闻"
+
+# NASA
+https://www.nasa.gov/feed/ "太空" "NASA" "新闻"
+https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss "太空" "NASA" "每日一图"
+
+# 国际新闻
+https://feeds.bbci.co.uk/news/rss.xml "境外" "英国" "BBC"
+https://www.theguardian.com/world/rss "境外" "英国" "卫报"
+https://www.scmp.com/rss/91/feed "境外" "香港" "SCMP"
+https://www.economist.com/latest/rss.xml "境外" "英国" "经济学人"
+
+# 日本新闻
+https://www.asahi.com/rss/asahi/newsheadlines.rdf "境外" "日本" "朝日新闻"
+https://www.japantimes.co.jp/news/feed/ "境外" "日本" "Japan Times"

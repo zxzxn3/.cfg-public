@@ -1,0 +1,46 @@
+// theme: axis
+// title: 中央 GIF，左右对称信息栏；底部横向指标。
+// 原生模块，无 command / Python。直接修改 format、颜色与定位列即可。
+// \u001b[NG = 终端第 N 列；\u001b[1A = 上移一行，与上一模块并排。
+// GIF 使用左侧定位；请在约 96 列以上的 Kitty 窗口浏览。
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {"type": "kitty", "source": "\"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/assets/frieren_v29_fastfetch_transparent.gif\"", "animationFrame": 0, "position": "left", "width": 20, "padding": {"left": 33, "right": 0, "top": 0}},
+  "display": {"separator": "", "key": {"type": "none"}, "color": {"output": "38;2;215;222;232"}, "percent": {"type": ["num", "bar"]}, "bar": {"width": 12, "char": {"elapsed": "━", "total": "·"}, "border": {"left": "", "right": ""}}},
+  "modules": [
+    {"type": "custom", "format": "\u001b[3G{#38;2;125;181;223}S O F T W A R E{#}"},
+    {"type": "custom", "format": "\u001b[1A\u001b[58G{#38;2;125;181;223}H A R D W A R E{#}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;105;117;135}──────────────────────────{#}"},
+    {"type": "custom", "format": "\u001b[1A\u001b[58G{#38;2;105;117;135}─────────────────────────────────{#}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;125;181;223}OS{#}"},
+    {"type": "custom", "format": "\u001b[1A\u001b[58G{#38;2;125;181;223}CPU{#}"},
+    {"type": "os", "format": "\u001b[3G{pretty-name}"},
+    {"type": "cpu", "format": "\u001b[1A\u001b[58G{name}"},
+    {"type": "custom", "format": "\u001b[1G{#38;2;125;181;223}{#}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;125;181;223}KERNEL{#}"},
+    {"type": "custom", "format": "\u001b[1A\u001b[58G{#38;2;125;181;223}MEMORY{#}"},
+    {"type": "kernel", "format": "\u001b[3G{release}"},
+    {"type": "memory", "format": "\u001b[1A\u001b[58G{used} / {total}"},
+    {"type": "custom", "format": "\u001b[1G{#38;2;125;181;223}{#}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;125;181;223}DESKTOP{#}"},
+    {"type": "custom", "format": "\u001b[1A\u001b[58G{#38;2;125;181;223}ROOT DISK{#}"},
+    {"type": "wm", "format": "\u001b[3G{pretty-name} {version}"},
+    {"type": "disk", "format": "\u001b[1A\u001b[58G{size-used} / {size-total}", "folders": "/"},
+    {"type": "custom", "format": "\u001b[1G{#38;2;125;181;223}{#}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;125;181;223}SHELL{#}"},
+    {"type": "custom", "format": "\u001b[1A\u001b[58G{#38;2;125;181;223}CORES{#}"},
+    {"type": "shell", "format": "\u001b[3G{pretty-name}"},
+    {"type": "cpu", "format": "\u001b[1A\u001b[58G{cores-physical} physical / {cores-logical} logical"},
+    {"type": "custom", "format": "\u001b[1G{#38;2;125;181;223}{#}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;125;181;223}TERMINAL{#}"},
+    {"type": "custom", "format": "\u001b[1A\u001b[58G{#38;2;125;181;223}FREQUENCY{#}"},
+    {"type": "terminal", "format": "\u001b[3G{pretty-name}"},
+    {"type": "cpu", "format": "\u001b[1A\u001b[58G{freq-base} base · {freq-max} max"},
+    {"type": "custom", "format": "\u001b[1G{#38;2;125;181;223}{#}"},
+    {"type": "custom", "format": "\u001b[3G{#38;2;105;117;135}────────────────────────────────────────────────────────────────────────────────────────{#}"},
+    {"type": "title", "format": "\u001b[3G{user-name}@{host-name}"},
+    {"type": "uptime", "format": "\u001b[1A\u001b[37GUP {days}d {hours}h {minutes}m"},
+    {"type": "packages", "format": "\u001b[1A\u001b[69G{all} packages"},
+    {"type": "gpu", "format": "\u001b[3G{#38;2;125;181;223}GPU  /  {#38;2;215;222;232}{name}{#}"}
+  ]
+}

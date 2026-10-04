@@ -1,0 +1,128 @@
+// theme: arcane
+// title: 绿玉 / 魔法回路
+// layout: {"rows": 24, "columns": 58}
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "source": "\"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/assets/frieren_v29_fastfetch_transparent.gif\"",
+    "type": "kitty",
+    "animationFrame": 0,
+    "width": 44,
+    "position": "auto",
+    "padding": {
+      "left": 2,
+      "right": 4,
+      "top": 1
+    }
+  },
+  "display": {
+    "separator": "  ",
+    "key": {
+      "width": 15
+    },
+    "color": {
+      "keys": "38;2;139;195;158",
+      "output": "38;2;219;222;228"
+    },
+    "bar": {
+      "width": 10,
+      "char": {
+        "elapsed": "━",
+        "total": "─"
+      },
+      "border": {
+        "left": "",
+        "right": ""
+      }
+    },
+    "percent": {
+      "type": [
+        "num",
+        "bar"
+      ]
+    }
+  },
+  "modules": [
+    {
+      "type": "custom",
+      "format": "{#38;2;139;195;158}✦  A R C A N E   T E L E M E T R Y{#}"
+    },
+    {
+      "type": "title",
+      "format": "{#38;2;219;222;228}{user-name}{#38;2;115;125;142} / {#38;2;219;222;228}{host-name}{#}"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "{#38;2;115;125;142}┌─ SYSTEM LINK ───────────────────{#}"
+    },
+    {
+      "type": "os",
+      "key": "│ world",
+      "format": "{pretty-name}"
+    },
+    {
+      "type": "kernel",
+      "key": "│ core"
+    },
+    {
+      "type": "wm",
+      "key": "│ scene",
+      "format": "{pretty-name}"
+    },
+    {
+      "type": "custom",
+      "format": "{#38;2;115;125;142}└────────────────────────────────{#}"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "{#38;2;139;195;158}┌─ RESOURCE POOL ─────────────────{#}"
+    },
+    {
+      "type": "memory",
+      "key": "│ mana",
+      "format": "{percentage-bar}  {percentage}"
+    },
+    {
+      "type": "memory",
+      "key": "│",
+      "format": "{used} / {total}"
+    },
+    {
+      "type": "disk",
+      "key": "│ archive",
+      "folders": "/",
+      "format": "{size-percentage-bar}  {size-percentage}"
+    },
+    {
+      "type": "disk",
+      "key": "│",
+      "folders": "/",
+      "format": "{size-used} / {size-total}"
+    },
+    {
+      "type": "custom",
+      "format": "{#38;2;115;125;142}└────────────────────────────────{#}"
+    },
+    "break",
+    {
+      "type": "cpu",
+      "key": "compute",
+      "format": "{name}"
+    },
+    {
+      "type": "gpu",
+      "key": "render",
+      "format": "{name}"
+    },
+    {
+      "type": "uptime",
+      "key": "session"
+    },
+    {
+      "type": "custom",
+      "format": "{#38;2;139;195;158}●  observation in progress{#}"
+    }
+  ]
+}

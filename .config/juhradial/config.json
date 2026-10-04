@@ -1,0 +1,191 @@
+{
+  "theme": "github-light",
+  "radial_menu": {
+    "slices": [
+      {
+        "label": "Play/Pause",
+        "action_id": "play_pause",
+        "type": "exec",
+        "command": "playerctl play-pause",
+        "color": "green",
+        "icon": "media-playback-start-symbolic"
+      },
+      {
+        "label": "New Note",
+        "action_id": "new_note",
+        "type": "exec",
+        "command": "xdg-open",
+        "color": "yellow",
+        "icon": "document-new-symbolic"
+      },
+      {
+        "label": "Lock",
+        "action_id": "lock",
+        "type": "exec",
+        "command": "loginctl lock-session",
+        "color": "red",
+        "icon": "system-lock-screen-symbolic"
+      },
+      {
+        "label": "Settings",
+        "action_id": "settings",
+        "type": "settings",
+        "command": "",
+        "color": "mauve",
+        "icon": "emblem-system-symbolic"
+      },
+      {
+        "label": "Screenshot",
+        "action_id": "screenshot",
+        "type": "exec",
+        "command": "flameshot gui",
+        "color": "blue",
+        "icon": "camera-photo-symbolic"
+      },
+      {
+        "label": "Emoji",
+        "action_id": "emoji",
+        "type": "exec",
+        "command": "ibus emoji",
+        "color": "pink",
+        "icon": "face-smile-symbolic"
+      },
+      {
+        "label": "Files",
+        "action_id": "files",
+        "type": "exec",
+        "command": "xdg-open ~",
+        "color": "sapphire",
+        "icon": "folder-symbolic"
+      },
+      {
+        "label": "AI",
+        "action_id": "ai",
+        "type": "submenu",
+        "command": "",
+        "color": "teal",
+        "icon": "applications-science-symbolic"
+      }
+    ],
+    "easy_switch_shortcuts": false,
+    "easy_switch_host_os": [
+      "windows",
+      "linux",
+      "unknown"
+    ]
+  },
+  "blur_enabled": true,
+  "desktop_environment": "auto",
+  "device_mode": "auto",
+  "haptics": {
+    "enabled": true,
+    "default_pattern": "subtle_collision",
+    "per_event": {
+      "menu_appear": "whisper_collision",
+      "slice_change": "whisper_collision",
+      "confirm": "subtle_collision",
+      "invalid": "damp_collision",
+      "window_switch": "whisper_collision",
+      "monitor_switch": "whisper_collision",
+      "gesture_tick": "whisper_collision",
+      "dpi_change": "subtle_collision",
+      "host_arrive": "subtle_collision",
+      "low_battery": "damp_collision",
+      "macro_start": "whisper_collision",
+      "macro_finish": "subtle_collision"
+    },
+    "intensity": 70,
+    "debounce_ms": 20,
+    "slice_debounce_ms": 20,
+    "reentry_debounce_ms": 50,
+    "monitor_switch_enabled": true,
+    "level": 100,
+    "panel_force": 0
+  },
+  "pointer": {
+    "speed": 16,
+    "acceleration": true,
+    "dpi": 6400,
+    "dpi_presets": [
+      800,
+      6400
+    ]
+  },
+  "scroll": {
+    "speed": 3,
+    "natural": false,
+    "smooth": true,
+    "smartshift": true,
+    "smartshift_threshold": 23,
+    "mode": "freespin"
+  },
+  "thumbwheel": {
+    "mode": "scroll",
+    "invert": false,
+    "speed": 1
+  },
+  "buttons": {
+    "gesture": "task_switcher",
+    "thumb": "radial_menu",
+    "middle": "middle_click",
+    "shift_wheel": "dpi_cycle",
+    "forward": "scroll_left_right",
+    "back": "back",
+    "horizontal_scroll": "scroll_left_right",
+    "gesture_directions": {
+      "enabled": true,
+      "down": "tab_close"
+    }
+  },
+  "app": {
+    "start_at_login": true,
+    "show_tray_icon": true,
+    "suggest_profiles": true,
+    "check_updates": true,
+    "onboarding": {
+      "ring": true
+    },
+    "onboarding_done": true
+  },
+  "radial": {
+    "minimal_mode": false,
+    "wheel": "carbon",
+    "click_outside_closes": true,
+    "auto_fit": true,
+    "accent": "#4C9AFF",
+    "icon_style": "mono2",
+    "monochrome_icons": true
+  },
+  "gaming": {
+    "enabled": false,
+    "suppress_overlay": true,
+    "active_dpi_profile": 1,
+    "dpi_profiles": [
+      {
+        "name": "Precision",
+        "dpi": 400,
+        "color": "blue"
+      },
+      {
+        "name": "Normal",
+        "dpi": 1000,
+        "color": "green"
+      },
+      {
+        "name": "Fast",
+        "dpi": 3200,
+        "color": "red"
+      }
+    ]
+  },
+  "flow": {
+    "enabled": false,
+    "direction": "right",
+    "edge_trigger": true,
+    "share_clipboard": true,
+    "edge_sensitivity": 50,
+    "monitor": ""
+  },
+  "de_defaults_applied": true,
+  "language": "system"
+}

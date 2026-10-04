@@ -1,0 +1,184 @@
+#!/usr/bin/env bash
+# Fastfetch 主题切换：主题从 themes/*.jsonc 自动发现，当前主题写在 config.jsonc 首行的 `// theme: 名字`。
+# 切换前先用 fastfetch 校验语法，写入走原子替换。
+set -euo pipefail
+
+base=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+themes_dir="$base/themes"
+config="$base/config.jsonc"
+
+theme_file() { printf '%s/%s.jsonc' "$themes_dir" "$1"; }
+
+# 主题按文件名自动发现，新增 themes/xxx.jsonc 就会出现在列表里，不用改脚本。
+list_themes() {
+    local file
+    for file in "$themes_dir"/*.jsonc; do
+        [[ -e $file ]] || continue
+        basename -- "$file" .jsonc
+    done | LC_ALL=C sort
+}
+
+# 当前主题直接读 config.jsonc 首行的 `// theme: 名字`；没有 marker 就是手写或无主配置。
+current_theme() {
+    local name
+    name=$(grep -m1 -E '^// *theme:' "$config" 2>/dev/null | sed -E 's|^// *theme: *||') || true
+    [[ -n ${name:-} ]] || return 1
+    printf '%s' "$name"
+}
+
+# 描述直接读主题文件里的 `// title: ...`；没写就留空，脚本不内置任何主题名。
+describe() {
+    local file=$1 title
+    title=$(grep -m1 -E '^// *title:' "$file" 2>/dev/null | sed -E 's|^// *title: *||') || true
+    [[ -n ${title:-} ]] || return 0
+    printf '%s' "$title"
+}
+
+# 只跑 title 模块，跳过脚本和 logo，负担很轻；解析成功返回 0，失败时把 fastfetch 的报错打出来。
+validate() {
+    local file=$1 status=0 out
+    out=$(fastfetch --config "$file" --structure title 2>&1 >/dev/null) || status=$?
+    (( status == 0 )) && return 0
+    printf '%s\n' "${out:-fastfetch 退出码 $status}" >&2
+    return 1
+}
+
+# 先写临时文件再 mv，避免中途失败留下半截 config。
+install() {
+    local src=$1 dst=$2 tmp
+    tmp=$(mktemp "$dst.tmp.XXXXXXXX")
+    cp -- "$src" "$tmp"
+    mv -f -- "$tmp" "$dst"
+}
+
+usage() {
+    printf '%s\n' 'Fastfetch · animated system diagrams' \
+        '用法：style                    列出全部主题' \
+        '      style <风格>             预览，不改默认' \
+        '      style use <风格>         保存当前修改，再切换（切换前校验语法）' \
+        '      style tour [风格]        浏览：n/Enter 下一套 · p 上一套 · r 刷新 · s 设默认 · q 退出' \
+        '      style save               把 config.jsonc 保存回当前主题' \
+        '      style status             当前主题、未保存改动、主题与备份数量'
+}
+
+save_current() {
+    [[ -f $config ]] || return 0
+    local current file backup
+    if ! current=$(current_theme); then
+        mkdir -p -- "$base/backups"
+        backup=$(mktemp "$base/backups/config.unsorted.XXXXXXXX.jsonc")
+        cp -- "$config" "$backup"
+        printf '当前配置没有对应主题，已备份：%s\n' "$backup"
+        return 0
+    fi
+    file=$(theme_file "$current")
+    [[ -f $file ]] || return 0
+    if ! cmp -s -- "$config" "$file"; then
+        cp -- "$config" "$file"
+        printf '已保存修改：%s\n' "$current"
+    fi
+}
+
+use_style() {
+    local name=${1:-} file
+    [[ -n $name ]] || { usage >&2; exit 2; }
+    file=$(theme_file "$name")
+    [[ -f $file ]] || { printf '主题不存在：%s\n' "$name" >&2; return 1; }
+    if ! grep -q -E '^// *theme:' "$file"; then
+        sed -i "1s|^|// theme: ${name}\n|" "$file"
+        printf '已为 %s.jsonc 补上 // theme: marker。\n' "$name"
+    fi
+    if [[ $(current_theme || true) == "$name" ]] && cmp -s -- "$config" "$file"; then
+        printf '当前已是：%s\n' "$name"
+        return 0
+    fi
+    if ! validate "$file"; then
+        printf '主题 %s 无法被 fastfetch 解析，已放弃切换，配置未改动。\n' "$name" >&2
+        return 1
+    fi
+    save_current
+    install "$file" "$config"
+    printf '默认风格：%s\n' "$name"
+}
+
+show() {
+    local config_file
+    config_file=$(theme_file "$1")
+    if [[ $(current_theme || true) == "$1" ]]; then
+        config_file="$config"
+    fi
+    fastfetch --config "$config_file"
+}
+
+list_all() {
+    local name desc current mark
+    current=$(current_theme || true)
+    while read -r name; do
+        mark=' '
+        [[ $name != "$current" ]] || mark='*'
+        grep -q -E '^// *theme:' "$(theme_file "$name")" || mark='?'
+        validate "$(theme_file "$name")" >/dev/null 2>&1 || mark='!'
+        desc=$(describe "$(theme_file "$name")")
+        printf '%s %-14s %s\n' "$mark" "$name" "${desc:-—}"
+    done < <(list_themes)
+    printf '\n  * 当前使用   ! 语法有问题   ? 缺 marker（use 时会自动补）\n'
+}
+
+status() {
+    local current file
+    if current=$(current_theme); then
+        printf '当前风格：%s\n' "$current"
+        file=$(theme_file "$current")
+        if [[ -f $file ]] && ! cmp -s -- "$config" "$file"; then
+            printf '注意：config.jsonc 与 themes/%s.jsonc 不同，有未保存改动（style save 保存）。\n' "$current"
+        fi
+    else
+        printf '当前风格：未设置（config.jsonc 是手写或恢复后的版本）\n'
+    fi
+    printf '主题数：%s，备份数：%s\n' \
+        "$(list_themes | wc -l)" \
+        "$(find "$base/backups" -maxdepth 1 -name 'config*.jsonc' 2>/dev/null | wc -l)"
+}
+
+case "${1:-}" in
+    ''|-h|--help|help) usage; printf '\n'; list_all ;;
+    list) list_all ;;
+    use) use_style "${2:-}" ;;
+    save) save_current ;;
+    status) status ;;
+    tour)
+        if [[ ! -t 0 || ! -t 1 ]]; then
+            printf '请在交互终端运行 tour，以查看 GIF 动画。\n' >&2
+            exit 1
+        fi
+        mapfile -t all < <(list_themes)
+        start=${2:-${all[0]}}
+        index=0
+        for i in "${!all[@]}"; do
+            [[ ${all[i]} != "$start" ]] || index=$i
+        done
+        while (( index < ${#all[@]} )); do
+            theme=${all[index]}
+            printf '\033[2J\033[H'
+            show "$theme"
+            printf '\n  [%s · %s/%s]  n/Enter 下一套 · p 上一套 · r 刷新 · s 设默认 · q 退出\n' \
+                "$theme" "$((index + 1))" "${#all[@]}"
+            while true; do
+                IFS= read -rsn1 key || exit 0
+                case "$key" in
+                    q|Q) exit 0 ;;
+                    p|P) (( index == 0 )) || index=$((index - 1)); break ;;
+                    r|R) break ;;
+                    s|S) use_style "$theme" ;;
+                    ''|n|N) index=$((index + 1)); break ;;
+                    *) : ;;
+                esac
+            done
+        done
+        ;;
+    *)
+        name=$1
+        [[ -f $(theme_file "$name") ]] || { printf '主题不存在：%s\n' "$name" >&2; exit 2; }
+        show "$name"
+        ;;
+esac

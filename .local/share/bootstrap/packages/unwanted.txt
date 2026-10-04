@@ -1,0 +1,62 @@
+# Software disliked or not needed; keep the names and useful reasons here
+# to avoid reconsidering the same choices. This is not an uninstall list.
+# Presence does not imply that a package is currently installed or removed.
+# Installation history belongs in pacman/Git history, not in this list's meaning.
+
+# --- Applications, themes and replaced packages ---
+alhp-keyring  # ALHP repository not wanted
+alhp-mirrorlist  # ALHP repository not wanted
+bibata-cursor-theme
+calcure
+catppuccin-fcitx5-git
+code  # editor alternatives: see packages.toml
+deno
+element  # the audio plugin host, not the Matrix client; that one is element-desktop
+fcitx5-chinese-addons
+fcitx5-material-color
+fcitx5-mellow-themes-git
+fcitx5-nord
+fcitx5-pangu-git
+fcitx5-pinboard
+fcitx5-skin-material
+iamb-bin
+ibus-rime  # -> fcitx5-rime (packages.toml)
+limine-entry-tool  # -> limine-mkinitcpio-hook (base.txt)
+nom
+pyprland
+ranger  # -> yazi (TUI file manager stays on yazi)
+realneptune
+syncthingtray  # -> syncthingtray-qt6 (packages.toml)
+yt-dlp
+
+# --- Other unwanted software ---
+asciinema
+calf
+charm
+chatgpt-desktop-bin
+clash-verge-rev-bin  # -> clash-verge-rev (packages.toml)
+claude-desktop
+evtest
+fcitx5-breeze
+fcitx5-inflex-themes-git
+fcitx5-skin-adwaita-dark
+fcitx5-skin-fluentdark-git
+fcitx5-theme-wechat
+foot
+hyprpm
+hyprsunset
+kooha
+nodejs
+openbsd-netcat
+osdlyrics
+rime-ice-installer
+shader-slang
+showmethekey
+socat
+ttf-comfortaa
+ttf-nerd-fonts-symbols-mono
+ttf-vista-fonts
+tty-clock
+visual-studio-code-bin
+wshowkeys-mao-git
+yay-bin  # -> yay (packages.toml)

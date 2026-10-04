@@ -1,0 +1,15 @@
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[user]
+	email = zxzxol@Outlook.com
+	name = zxzxn3
+[core]
+	editor = vim
+[http]
+	proxy = http://127.0.0.1:7897
+[https]
+	proxy = http://127.0.0.1:7897

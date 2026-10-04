@@ -1,0 +1,248 @@
+// theme: strata
+// title: 系统剖面 / 六层结构与侧挂设备
+// layout: {"rows": 37, "columns": 76}
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "source": "\"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/assets/frieren_v29_fastfetch_transparent.gif\"",
+    "type": "kitty",
+    "animationFrame": 0,
+    "width": 68,
+    "position": "auto",
+    "padding": {
+      "left": 1,
+      "right": 4,
+      "top": 2
+    }
+  },
+  "display": {
+    "separator": "",
+    "key": {
+      "type": "none"
+    }
+  },
+  "modules": [
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 0"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 1"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 2"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 3"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 4"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 5"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 6"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 7"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 8"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 9"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 10"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 11"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 12"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 13"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 14"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 15"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 16"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 17"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 18"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 19"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 20"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 21"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 22"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 23"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 24"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 25"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 26"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 27"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 28"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 29"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 30"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 31"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 32"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 33"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 34"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 35"
+    },
+    {
+      "type": "command",
+      "key": " ",
+      "format": "{result}",
+      "text": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/scripts/diagrams.py\" strata 36"
+    }
+  ]
+}

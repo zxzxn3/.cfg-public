@@ -1,0 +1,1203 @@
+#!/bin/bash
+# Vendored from
+#   https://raw.githubusercontent.com/JuhLabs/juhradial-mx/master/install.sh
+# on 2026-09-26; upstream sha256
+#   e5ab6f4fc0241ea48ad7c231697d20938bf1ea86f08a37f6a88f141d795ce9e4
+# (that hash covers the file without the local changes below: this header and
+# the dry-run guard after 'set -e'). This bundled installer downloads the
+# release selected by RELEASE_VERSION without verifying a tarball checksum.
+# Review upstream changes when updating it.
+#
+# JuhRadial MX Universal Installer
+# https://github.com/JuhLabs/juhradial-mx
+#
+# Usage: curl -fsSL https://raw.githubusercontent.com/JuhLabs/juhradial-mx/master/install.sh | bash
+#        ... | bash -s -- --user   (everything under $HOME; automatic on
+#                                   Bazzite, Fedora Atomic and other image-based systems)
+#        ... | bash -s -- --yes    (no questions, for scripts)
+#
+# This script will:
+# 1. Detect your Linux distribution
+# 2. Install required dependencies
+# 3. Clone and build JuhRadial MX
+# 4. Install and enable the systemd service
+#
+
+set -e
+
+# Local addition: DRY_RUN=1 must not change anything.
+if [ "${DRY_RUN:-0}" = "1" ]; then
+    echo '[dry-run] Would run the JuhRadial MX installer: dependencies via the'
+    echo '          distro package manager, release tarball, /opt/juhradial-mx,'
+    echo '          udev rule, user systemd unit.'
+    exit 0
+fi
+
+# ── Colors & Formatting ──────────────────────────────────────────────
+BOLD='\033[1m'
+DIM='\033[2m'
+RESET='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+WHITE='\033[1;37m'
+GRAY='\033[0;90m'
+
+# ── Configuration ────────────────────────────────────────────────────
+REPO_URL="https://github.com/JuhLabs/juhradial-mx"
+# The release this installer ships (scripts/bump-version.sh keeps it in step).
+RELEASE_VERSION="0.4.5-beta.3"
+INSTALL_DIR="/opt/juhradial-mx"
+BIN_DIR="/usr/local/bin"
+SYSTEMD_USER_DIR="$HOME/.config/systemd/user"
+CONFIG_DIR="$HOME/.config/juhradial"
+DISTRO_FAMILY=""
+TOTAL_STEPS=6
+CURRENT_STEP=0
+INSTALL_MODE="install"  # "install" or "upgrade"
+GROUP_ACTIVATION_PENDING=0  # set when 'input' was added but isn't active this session
+SHARE_DIR="/usr/share/juhradial"
+APPS_DIR="/usr/share/applications"
+ICON_DIR="/usr/share/icons/hicolor/scalable/apps"
+PRIV="sudo"   # runs the file installs; empty in user mode
+USER_MODE=0   # --user: install under $HOME (#138)
+ATOMIC=0      # image-based system (rpm-ostree): /usr is read-only
+ASSUME_YES=0  # --yes: no prompts
+REBOOT_FOR_LAYERS=0  # rpm-ostree layered packages wait for a reboot
+
+# ── Output helpers ───────────────────────────────────────────────────
+print_banner() {
+    local BCYAN='\033[1;96m'
+    echo ""
+    echo -e "${BCYAN}"
+    cat << 'BANNER'
+    ___       _    ______          _ _       _  ___  ____  __
+   |_  |     | |   | ___ \        | (_)     | | |  \/  \ \ / /
+     | |_   _| |__ | |_/ /__ _  __| |_  __ _| | | .  . |\ V /
+     | | | | | '_ \|    // _` |/ _` | |/ _` | | | |\/| |/   \
+ /\__/ | |_| | | | | |\ | (_| | (_| | | (_| | | | |  | / /^\ \
+ \____/ \__,_|_| |_\_| \_\__,_|\__,_|_|\__,_|_| \_|  |_\/   \/
+BANNER
+    echo -e "${RESET}"
+    echo -e "                       ${CYAN}· Installer${RESET}"
+    echo -e "             ${DIM}Radial menu for MX Master on Linux${RESET}"
+    echo ""
+}
+
+step() {
+    CURRENT_STEP=$((CURRENT_STEP + 1))
+    echo ""
+    echo -e "  ${CYAN}${BOLD}[$CURRENT_STEP/$TOTAL_STEPS]${RESET} ${BOLD}$1${RESET}"
+    echo -e "  ${GRAY}$(printf '%.0s─' {1..48})${RESET}"
+}
+
+log_info() {
+    echo -e "  ${BLUE}→${RESET} $1"
+}
+
+log_success() {
+    echo -e "  ${GREEN}✓${RESET} $1"
+}
+
+log_warning() {
+    echo -e "  ${YELLOW}!${RESET} ${YELLOW}$1${RESET}"
+}
+
+log_error() {
+    echo -e "  ${RED}✗${RESET} ${RED}$1${RESET}"
+}
+
+log_dim() {
+    echo -e "  ${GRAY}  $1${RESET}"
+}
+
+# ── Options ──────────────────────────────────────────────────────────
+print_usage() {
+    echo "Usage: install.sh [--user] [--yes]"
+    echo "  --user  install under your home folder (~/.local), sudo only for the"
+    echo "          udev rules and the input group. Automatic on image-based systems"
+    echo "          such as Bazzite and Fedora Atomic, where /usr is read-only."
+    echo "  --yes   do not ask before installing"
+}
+
+parse_args() {
+    local arg
+    for arg in "$@"; do
+        case "$arg" in
+            --user) USER_MODE=1 ;;
+            --yes|-y) ASSUME_YES=1 ;;
+            --help|-h) print_usage; exit 0 ;;
+            *) log_error "Unknown option: $arg"; print_usage; exit 1 ;;
+        esac
+    done
+    if [ -e /run/ostree-booted ]; then
+        ATOMIC=1
+        USER_MODE=1
+    fi
+    if [ "$USER_MODE" = "1" ]; then
+        local data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+        INSTALL_DIR="$data_home/juhradial-mx"
+        SHARE_DIR="$data_home/juhradial"
+        BIN_DIR="$HOME/.local/bin"
+        APPS_DIR="$data_home/applications"
+        ICON_DIR="$data_home/icons/hicolor/scalable/apps"
+        PRIV=""
+    fi
+}
+
+# ── Pre-flight checks ───────────────────────────────────────────────
+check_root() {
+    if [[ $EUID -eq 0 ]]; then
+        log_error "Do not run this script as root. It will ask for sudo when needed."
+        exit 1
+    fi
+}
+
+detect_distro() {
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        DISTRO=$ID
+        DISTRO_LIKE=$ID_LIKE
+        DISTRO_PRETTY="${PRETTY_NAME:-$ID}"
+        VERSION=$VERSION_ID
+    elif [ -f /etc/lsb-release ]; then
+        . /etc/lsb-release
+        DISTRO=$DISTRIB_ID
+        DISTRO_PRETTY="$DISTRIB_ID $DISTRIB_RELEASE"
+        VERSION=$DISTRIB_RELEASE
+    else
+        DISTRO=$(uname -s)
+        DISTRO_PRETTY="$DISTRO"
+    fi
+
+    resolve_distro_family
+}
+
+resolve_distro_family() {
+    DISTRO_FAMILY="$DISTRO"
+
+    case "$DISTRO" in
+        arch|manjaro|endeavouros|garuda|artix|cachyos|arcolinux|archcraft)
+            DISTRO_FAMILY="arch"
+            ;;
+        fedora|rhel|centos|rocky|almalinux|nobara|ultramarine)
+            DISTRO_FAMILY="fedora"
+            ;;
+        debian|ubuntu|linuxmint|pop|elementary|kali|zorin|tuxedo|neon|mx)
+            DISTRO_FAMILY="debian"
+            ;;
+        opensuse*|suse*|sles)
+            DISTRO_FAMILY="opensuse"
+            ;;
+    esac
+
+    # Fallback: check ID_LIKE for derivatives we didn't list
+    if [ "$DISTRO_FAMILY" = "$DISTRO" ] && [ -n "$DISTRO_LIKE" ]; then
+        if [[ "$DISTRO_LIKE" == *"arch"* ]]; then
+            DISTRO_FAMILY="arch"
+        elif [[ "$DISTRO_LIKE" == *"fedora"* ]] || [[ "$DISTRO_LIKE" == *"rhel"* ]]; then
+            DISTRO_FAMILY="fedora"
+        elif [[ "$DISTRO_LIKE" == *"debian"* ]] || [[ "$DISTRO_LIKE" == *"ubuntu"* ]]; then
+            DISTRO_FAMILY="debian"
+        elif [[ "$DISTRO_LIKE" == *"suse"* ]]; then
+            DISTRO_FAMILY="opensuse"
+        fi
+    fi
+
+    # Final fallback: detect by package manager
+    if [ "$DISTRO_FAMILY" = "$DISTRO" ] || [ -z "$DISTRO_FAMILY" ]; then
+        if command -v pacman &> /dev/null; then
+            DISTRO_FAMILY="arch"
+        elif command -v apt-get &> /dev/null; then
+            DISTRO_FAMILY="debian"
+        elif command -v dnf &> /dev/null; then
+            DISTRO_FAMILY="fedora"
+        elif command -v zypper &> /dev/null; then
+            DISTRO_FAMILY="opensuse"
+        fi
+    fi
+}
+
+check_wayland() {
+    if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+        WAYLAND_OK=true
+    else
+        WAYLAND_OK=false
+    fi
+}
+
+check_desktop() {
+    DESKTOP_TYPE="unknown"
+    DESKTOP_LABEL="${XDG_CURRENT_DESKTOP:-unknown}"
+
+    # Check compositors / desktop environments
+    if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+        DESKTOP_TYPE="hyprland"
+        DESKTOP_LABEL="Hyprland"
+    elif [ -n "$SWAYSOCK" ] || [ "$XDG_CURRENT_DESKTOP" = "sway" ]; then
+        DESKTOP_TYPE="sway"
+        DESKTOP_LABEL="Sway"
+    elif [[ "$XDG_CURRENT_DESKTOP" == *"KDE"* ]] || [ "$DESKTOP_SESSION" = "plasma" ] || [ "$DESKTOP_SESSION" = "plasmawayland" ]; then
+        DESKTOP_TYPE="kde"
+        DESKTOP_LABEL="KDE Plasma"
+    elif [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* ]]; then
+        DESKTOP_TYPE="gnome"
+        DESKTOP_LABEL="GNOME"
+    elif [[ "$XDG_CURRENT_DESKTOP" == *"COSMIC"* ]] || pgrep -x cosmic-comp &> /dev/null; then
+        DESKTOP_TYPE="cosmic"
+        DESKTOP_LABEL="COSMIC"
+    elif [[ "$XDG_CURRENT_DESKTOP" == *"X-Cinnamon"* ]]; then
+        DESKTOP_TYPE="cinnamon"
+        DESKTOP_LABEL="Cinnamon"
+    elif [[ "$XDG_CURRENT_DESKTOP" == *"XFCE"* ]]; then
+        DESKTOP_TYPE="xfce"
+        DESKTOP_LABEL="XFCE"
+    elif [[ "$XDG_CURRENT_DESKTOP" == *"Budgie"* ]]; then
+        DESKTOP_TYPE="budgie"
+        DESKTOP_LABEL="Budgie"
+    elif pgrep -x river &> /dev/null; then
+        DESKTOP_TYPE="river"
+        DESKTOP_LABEL="River"
+    elif pgrep -x niri &> /dev/null; then
+        DESKTOP_TYPE="niri"
+        DESKTOP_LABEL="Niri"
+    elif pgrep -x wayfire &> /dev/null; then
+        DESKTOP_TYPE="wayfire"
+        DESKTOP_LABEL="Wayfire"
+    elif [ "$XDG_CURRENT_DESKTOP" = "i3" ] || pgrep -x i3 &> /dev/null; then
+        DESKTOP_TYPE="i3"
+        DESKTOP_LABEL="i3"
+    fi
+}
+
+check_existing_install() {
+    if [ -d "$INSTALL_DIR" ]; then
+        INSTALL_MODE="upgrade"
+        # Try to read current version from the installed copy
+        if [ -f "$INSTALL_DIR/CHANGELOG.md" ]; then
+            INSTALLED_VERSION=$(grep -m1 -oP '## \[?\K[0-9]+\.[0-9]+\.[0-9]+[^]\s]*' "$INSTALL_DIR/CHANGELOG.md" 2>/dev/null || echo "")
+        fi
+    fi
+}
+
+check_logitech_device() {
+    LOGI_DEVICE_FOUND=false
+
+    # Check for Logitech USB devices (vendor ID 046d)
+    if command -v lsusb &> /dev/null; then
+        if lsusb 2>/dev/null | grep -qi "046d:"; then
+            LOGI_DEVICE_FOUND=true
+        fi
+    fi
+
+    # Fallback: check HID subsystem
+    if [ "$LOGI_DEVICE_FOUND" = false ]; then
+        if ls /sys/bus/hid/devices/ 2>/dev/null | grep -qi "046D"; then
+            LOGI_DEVICE_FOUND=true
+        fi
+    fi
+}
+
+print_system_info() {
+    echo ""
+    echo -e "  ${BOLD}System${RESET}"
+    echo -e "  ${GRAY}$(printf '%.0s─' {1..48})${RESET}"
+
+    # Distro (use PRETTY_NAME for a nicer display)
+    echo -e "  ${DIM}Distro${RESET}       ${WHITE}${DISTRO_PRETTY}${RESET} ${GRAY}(${DISTRO_FAMILY})${RESET}"
+
+    # Kernel
+    echo -e "  ${DIM}Kernel${RESET}       $(uname -r)"
+
+    # Session
+    if [ "$WAYLAND_OK" = true ]; then
+        echo -e "  ${DIM}Session${RESET}      ${GREEN}Wayland${RESET}"
+    else
+        echo -e "  ${DIM}Session${RESET}      ${YELLOW}X11${RESET} ${GRAY}— some features may be limited${RESET}"
+    fi
+
+    # Desktop
+    case "$DESKTOP_TYPE" in
+        hyprland|kde|sway)
+            echo -e "  ${DIM}Desktop${RESET}      ${GREEN}${DESKTOP_LABEL}${RESET}"
+            ;;
+        gnome|cosmic|cinnamon|xfce|budgie|river|niri|wayfire|i3)
+            echo -e "  ${DIM}Desktop${RESET}      ${GREEN}${DESKTOP_LABEL}${RESET}"
+            ;;
+        *)
+            echo -e "  ${DIM}Desktop${RESET}      ${YELLOW}${DESKTOP_LABEL}${RESET} ${GRAY}— works best on KDE/Hyprland${RESET}"
+            ;;
+    esac
+
+    # Logitech device
+    if [ "$LOGI_DEVICE_FOUND" = true ]; then
+        echo -e "  ${DIM}Mouse${RESET}        ${GREEN}Logitech receiver detected${RESET}"
+    else
+        echo -e "  ${DIM}Mouse${RESET}        ${YELLOW}No Logitech receiver found${RESET} ${GRAY}— plug in to continue${RESET}"
+    fi
+
+    # Install mode
+    if [ "$INSTALL_MODE" = "upgrade" ]; then
+        local ver_info=""
+        [ -n "$INSTALLED_VERSION" ] && ver_info=" ${GRAY}(${INSTALLED_VERSION})${RESET}"
+        echo -e "  ${DIM}Mode${RESET}         ${CYAN}Upgrade${RESET}${ver_info}"
+    else
+        echo -e "  ${DIM}Mode${RESET}         ${WHITE}Fresh install${RESET}"
+    fi
+    if [ "$USER_MODE" = "1" ]; then
+        echo -e "  ${DIM}Location${RESET}     ${WHITE}Your home folder${RESET} ${GRAY}($SHARE_DIR, $BIN_DIR)${RESET}"
+    fi
+
+    echo ""
+}
+
+# ── Hyprland configuration ──────────────────────────────────────────
+configure_hyprland() {
+    if [ "$DESKTOP_TYPE" != "hyprland" ]; then
+        return 0
+    fi
+
+    log_info "Configuring Hyprland window rules..."
+
+    HYPR_CONFIG_DIR="$HOME/.config/hypr"
+    RULES_CONTENT='
+# ######## JuhRadial MX - Radial Menu Overlay ########
+# These rules ensure the radial menu appears correctly as an overlay
+windowrulev2 = float, title:^(JuhRadial MX)$
+windowrulev2 = noblur, title:^(JuhRadial MX)$
+windowrulev2 = noborder, title:^(JuhRadial MX)$
+windowrulev2 = noshadow, title:^(JuhRadial MX)$
+windowrulev2 = pin, title:^(JuhRadial MX)$
+windowrulev2 = noanim, title:^(JuhRadial MX)$'
+
+    # Check if rules already exist
+    if grep -q "JuhRadial MX" "$HYPR_CONFIG_DIR"/*.conf "$HYPR_CONFIG_DIR"/**/*.conf 2>/dev/null; then
+        log_dim "Hyprland rules already configured"
+        return 0
+    fi
+
+    # Try dots-hyprland custom rules first (end-4/dots-hyprland structure)
+    if [ -f "$HYPR_CONFIG_DIR/custom/rules.conf" ]; then
+        echo "$RULES_CONTENT" >> "$HYPR_CONFIG_DIR/custom/rules.conf"
+        log_success "Added rules to custom/rules.conf"
+    # Try standard hyprland.conf
+    elif [ -f "$HYPR_CONFIG_DIR/hyprland.conf" ]; then
+        echo "$RULES_CONTENT" >> "$HYPR_CONFIG_DIR/hyprland.conf"
+        log_success "Added rules to hyprland.conf"
+    # Create a new rules file and source it
+    else
+        mkdir -p "$HYPR_CONFIG_DIR"
+        echo "$RULES_CONTENT" > "$HYPR_CONFIG_DIR/juhradial-rules.conf"
+
+        if [ -f "$HYPR_CONFIG_DIR/hyprland.conf" ]; then
+            echo "source=juhradial-rules.conf" >> "$HYPR_CONFIG_DIR/hyprland.conf"
+        fi
+        log_success "Created juhradial-rules.conf"
+    fi
+
+    # Reload Hyprland config if possible
+    if command -v hyprctl &> /dev/null; then
+        hyprctl reload 2>/dev/null && log_dim "Hyprland config reloaded"
+    fi
+}
+
+# ── Dependency installation ──────────────────────────────────────────
+install_deps_fedora() {
+    sudo dnf install -y \
+        rust cargo \
+        python3 python3-pip \
+        python3-pyqt6 qt6-qtsvg qt6-qtdeclarative \
+        python3-gobject gtk4 libadwaita \
+        gtk4-layer-shell \
+        python3-cryptography \
+        dbus-devel systemd-devel \
+        libevdev-devel hidapi-devel \
+        ydotool \
+        git make
+}
+
+install_deps_arch() {
+    sudo pacman -S --noconfirm --needed \
+        rust \
+        python python-pip \
+        python-pyqt6 qt6-svg qt6-declarative \
+        python-gobject gtk4 libadwaita \
+        gtk4-layer-shell \
+        python-cryptography \
+        dbus systemd-libs \
+        libevdev hidapi \
+        ydotool \
+        git make base-devel
+}
+
+install_deps_debian() {
+    sudo apt-get update
+    sudo apt-get install -y \
+        rustc cargo \
+        python3 python3-pip python3-venv \
+        python3-pyqt6 python3-pyqt6.qtsvg \
+        python3-gi python3-gi-cairo gir1.2-gtk-4.0 gir1.2-adw-1 \
+        python3-cryptography \
+        libdbus-1-dev libsystemd-dev \
+        libevdev-dev libhidapi-dev \
+        ydotool \
+        git make build-essential
+
+    if apt-cache show libgtk4-layer-shell0 &> /dev/null; then
+        sudo apt-get install -y libgtk4-layer-shell0
+    fi
+
+    # The Qt/QML settings app needs QtQuick.Effects, which requires Qt >= 6.5.
+    # Debian 13 / Ubuntu 25.04+ ship it; older releases keep the GTK settings
+    # app (the launcher falls back automatically).
+    if apt-cache show qml6-module-qtquick-effects &> /dev/null; then
+        sudo apt-get install -y \
+            python3-pyqt6.qtqml python3-pyqt6.qtquick \
+            qml6-module-qtqml qml6-module-qtqml-workerscript \
+            qml6-module-qtquick qml6-module-qtquick-window \
+            qml6-module-qtquick-controls qml6-module-qtquick-templates \
+            qml6-module-qtquick-layouts qml6-module-qtquick-shapes \
+            qml6-module-qtquick-effects
+    else
+        log_warning "Qt >= 6.5 QML modules are not available on this release: the Qt settings app is disabled, the GTK settings app is used instead"
+    fi
+}
+
+install_deps_opensuse() {
+    sudo zypper install -y \
+        rust cargo \
+        python3 python3-pip \
+        python3-PyQt6 qt6-declarative-imports \
+        python3-gobject gtk4 libadwaita-devel \
+        python3-cryptography \
+        dbus-1-devel systemd-devel \
+        libevdev-devel libhidapi-devel \
+        ydotool \
+        git make
+
+    # gtk4-layer-shell is optional: only the niri compositor needs it. openSUSE
+    # does not ship it in the default repos (it lives in devel:languages:zig), so
+    # skip it rather than warn alarmingly. niri users can add that repo first.
+    if ! sudo zypper install -y gtk4-layer-shell 2>/dev/null; then
+        log_info "Skipping gtk4-layer-shell (optional, only needed for the niri compositor; not in default openSUSE repos)"
+    fi
+}
+
+# Image-based systems (Bazzite, Fedora Atomic): nothing can be installed with
+# dnf. Check the runtime packages and offer to layer the missing ones (that
+# needs a reboot); the daemon comes prebuilt or is built in a distrobox.
+ATOMIC_RUNTIME_PKGS="python3-pyqt6 qt6-qtsvg qt6-qtdeclarative python3-gobject gtk4 libadwaita python3-cryptography ydotool"
+install_deps_atomic() {
+    local pkg missing=""
+    for pkg in $ATOMIC_RUNTIME_PKGS; do
+        rpm -q "$pkg" >/dev/null 2>&1 || missing="$missing $pkg"
+    done
+    if [ -z "$missing" ]; then
+        log_success "Runtime packages already present"
+        return 0
+    fi
+    log_warning "Missing on this system:$missing"
+    if [ "$ASSUME_YES" != "1" ]; then
+        echo -e "  ${BOLD}Layer them with rpm-ostree now?${RESET} ${DIM}(needs a reboot afterwards) [y/N]${RESET} \c"
+        read -n 1 -r < /dev/tty
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            log_info "Skipped. Layer them later: sudo rpm-ostree install$missing"
+            return 0
+        fi
+    fi
+    # shellcheck disable=SC2086
+    sudo rpm-ostree install --idempotent $missing
+    REBOOT_FOR_LAYERS=1
+    log_success "Layered$missing (active after a reboot)"
+}
+
+install_dependencies() {
+    step "Installing dependencies"
+    if [ "$ATOMIC" = "1" ]; then
+        log_info "Image-based system: ${BOLD}rpm-ostree${RESET}"
+        install_deps_atomic
+        return 0
+    fi
+    log_info "Package manager: ${BOLD}${DISTRO_FAMILY}${RESET}"
+
+    case $DISTRO_FAMILY in
+        fedora)
+            install_deps_fedora
+            ;;
+        arch)
+            install_deps_arch
+            ;;
+        debian)
+            install_deps_debian
+            ;;
+        opensuse)
+            install_deps_opensuse
+            ;;
+        *)
+            log_error "Unsupported distribution: $DISTRO"
+            log_dim "Please install dependencies manually. See CONTRIBUTING.md"
+            exit 1
+            ;;
+    esac
+    log_success "Dependencies ready"
+}
+
+# ── Repository ───────────────────────────────────────────────────────
+
+# Newest release tarball (source snapshot plus a prebuilt daemon), a beta
+# included: master carries the newest release, beta or not, so this installs
+# what the one-liner would clone. Preferred over a git clone: it is what the
+# Release workflow publishes, it counts toward the project's download total,
+# and the prebuilt daemon skips a full Rust build on most machines. Returns 1
+# when no release asset is available so the caller can fall back to git.
+# Set JUHRADIAL_FROM_SOURCE=1 to always clone.
+fetch_release() {
+    [ "${JUHRADIAL_FROM_SOURCE:-0}" = "1" ] && return 1
+    command -v tar >/dev/null 2>&1 || return 1
+    [ "$(uname -m)" = "x86_64" ] || return 1
+
+    local api url tmp tarball top uid gid
+    tmp="$(mktemp -d)"
+    tarball="$tmp/release.tar.gz"
+    # This release's tarball by its fixed address: no GitHub API call (the API
+    # allows 60 unauthenticated calls an hour per address), and it counts.
+    url="$REPO_URL/releases/download/v$RELEASE_VERSION/juhradial-mx-$RELEASE_VERSION-linux-x86_64.tar.gz"
+    log_info "Downloading $(basename "$url")..."
+    if ! curl -fsSL -o "$tarball" "$url"; then
+        # Not released yet (master ahead of it): the newest release with a
+        # Linux tarball, newest first, drafts not listed.
+        api="https://api.github.com/repos/JuhLabs/juhradial-mx/releases?per_page=10"
+        url="$(curl -fsSL -H 'Accept: application/vnd.github+json' "$api" 2>/dev/null \
+            | grep -o '"browser_download_url": *"[^"]*linux-x86_64\.tar\.gz"' \
+            | head -1 | sed 's/.*"\(https[^"]*\)"/\1/')"
+        [ -n "$url" ] && curl -fsSL -o "$tarball" "$url" || { rm -rf "$tmp"; return 1; }
+        log_info "Downloaded $(basename "$url")"
+    fi
+    tar -xzf "$tarball" -C "$tmp" || { rm -rf "$tmp"; return 1; }
+    top="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -1)"
+    [ -f "$top/daemon/Cargo.toml" ] || { rm -rf "$tmp"; return 1; }
+
+    uid="$(id -u)"
+    gid="$(id -g)"
+    [ -e "$INSTALL_DIR" ] && $PRIV rm -rf "$INSTALL_DIR"
+    $PRIV install -d -o "$uid" -g "$gid" "$INSTALL_DIR"
+    cp -a "$top"/. "$INSTALL_DIR"/
+    rm -rf "$tmp"
+    cd "$INSTALL_DIR"
+    log_success "Release $(cat VERSION 2>/dev/null || echo '?') unpacked"
+    return 0
+}
+
+# Install from a checkout already on this machine (development builds, or a
+# release tarball unpacked by hand): JUHRADIAL_LOCAL_TREE=/path/to/checkout.
+# Copies the tree into INSTALL_DIR without .git, cargo's target directory
+# (except an already-built release daemon, which build_project then reuses),
+# the Qt app's local venv, and bytecode caches.
+install_from_local_tree() {
+    local src="$1" uid gid
+    [ -f "$src/daemon/Cargo.toml" ] || return 1
+    uid="$(id -u)"
+    gid="$(id -g)"
+    log_info "Installing from local tree $src"
+    [ -e "$INSTALL_DIR" ] && $PRIV rm -rf "$INSTALL_DIR"
+    $PRIV install -d -o "$uid" -g "$gid" "$INSTALL_DIR"
+    tar -C "$src" \
+        --exclude=./.git \
+        --exclude=./daemon/target \
+        --exclude=./crates/mx-keypad/target \
+        --exclude=./settings-qt/.venv \
+        --exclude=__pycache__ \
+        -cf - . | tar -C "$INSTALL_DIR" -xf -
+    if [ -x "$src/daemon/target/release/juhradiald" ]; then
+        install -Dm755 "$src/daemon/target/release/juhradiald" "$INSTALL_DIR/daemon/target/release/juhradiald"
+    fi
+    cd "$INSTALL_DIR"
+    log_success "Local tree copied"
+    return 0
+}
+
+clone_repo() {
+    step "Fetching source"
+
+    if [ -n "${JUHRADIAL_LOCAL_TREE:-}" ]; then
+        if install_from_local_tree "$JUHRADIAL_LOCAL_TREE"; then
+            return 0
+        fi
+        log_error "JUHRADIAL_LOCAL_TREE=$JUHRADIAL_LOCAL_TREE is not a JuhRadial MX checkout"
+        exit 1
+    fi
+
+    if fetch_release; then
+        return 0
+    fi
+    log_info "No release tarball available; fetching from git"
+
+    # Use numeric IDs for ownership: the primary group is not always named after
+    # the user (issue #52 hit a chown failure on Arch where the group differs).
+    local uid gid
+    uid="$(id -u)"
+    gid="$(id -g)"
+
+    if [ -d "$INSTALL_DIR/.git" ]; then
+        log_info "Updating existing installation..."
+        $PRIV chown -R "$uid:$gid" "$INSTALL_DIR"
+        git -C "$INSTALL_DIR" fetch origin
+        git -C "$INSTALL_DIR" reset --hard origin/master
+        git -C "$INSTALL_DIR" clean -fd
+    else
+        log_info "Cloning repository..."
+        # A previous failed install can leave a partial, root-owned dir behind;
+        # clear it so the clone starts clean and ends up owned by the user.
+        [ -e "$INSTALL_DIR" ] && $PRIV rm -rf "$INSTALL_DIR"
+        $PRIV install -d -o "$uid" -g "$gid" "$INSTALL_DIR"
+        git clone "$REPO_URL" "$INSTALL_DIR"
+    fi
+
+    cd "$INSTALL_DIR"
+    log_success "Source ready"
+}
+
+# ── Build ────────────────────────────────────────────────────────────
+
+# Minimum cargo minor version (1.MIN) able to build the daemon: the committed
+# Cargo.lock is format v4 (needs cargo >= 1.78) and the toml_edit dependency
+# needs rustc >= 1.76. Distro toolchains are frequently older (Ubuntu 24.04
+# ships 1.75), so bootstrap rustup when the active cargo is too old or missing.
+MIN_CARGO_MINOR=78
+ensure_rust_toolchain() {
+    if command -v cargo &> /dev/null; then
+        local ver major minor
+        ver="$(cargo --version 2>/dev/null | awk '{print $2}')"
+        major="${ver%%.*}"
+        minor="$(printf '%s' "$ver" | cut -d. -f2)"
+        if [ "${major:-0}" -gt 1 ] || { [ "${major:-0}" -eq 1 ] && [ "${minor:-0}" -ge "$MIN_CARGO_MINOR" ]; }; then
+            return 0
+        fi
+        log_warning "cargo $ver is too old to build (need >= 1.$MIN_CARGO_MINOR); installing rustup"
+    else
+        log_info "Rust toolchain not found; installing rustup"
+    fi
+
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal
+    # shellcheck source=/dev/null
+    . "$HOME/.cargo/env"
+}
+
+build_in_distrobox() {
+    command -v distrobox >/dev/null 2>&1 || return 1
+    local box="juhradial-build" image="registry.fedoraproject.org/fedora-toolbox:${VERSION:-latest}"
+    log_info "Building the daemon inside a distrobox ($image)..."
+    if ! distrobox list 2>/dev/null | grep -qw "$box"; then
+        distrobox create --yes --name "$box" --image "$image" || return 1
+    fi
+    distrobox enter "$box" -- bash -c "sudo dnf install -y cargo rust gcc >/dev/null && cd '$INSTALL_DIR/daemon' && cargo build --release"
+}
+
+build_project() {
+    step "Building daemon"
+    cd "$INSTALL_DIR"
+
+    # A release tarball ships a prebuilt daemon; use it when it runs here
+    # (same architecture, compatible glibc) and only compile otherwise.
+    if [ -x daemon/target/release/juhradiald ] && daemon/target/release/juhradiald --version >/dev/null 2>&1; then
+        log_success "Using the prebuilt daemon ($(daemon/target/release/juhradiald --version 2>/dev/null | head -1))"
+        return 0
+    fi
+
+    # Image-based hosts ship no compiler: build in a Fedora toolbox container
+    # (distrobox shares $HOME, so the binary lands in INSTALL_DIR).
+    if [ "$USER_MODE" = "1" ] && ! command -v cc >/dev/null 2>&1; then
+        if build_in_distrobox; then
+            log_success "Build complete"
+            return 0
+        fi
+        log_error "No C compiler and no distrobox to build in. Install a JuhRadial MX release (it ships a prebuilt daemon) or run this inside a toolbox."
+        exit 1
+    fi
+
+    ensure_rust_toolchain
+    log_info "Compiling Rust daemon..."
+    # Source builds need the sibling protocol crate, including from local trees.
+    [ -f crates/mx-keypad/Cargo.toml ] || { log_error "Source tree is missing crates/mx-keypad"; return 1; }
+    cd daemon
+    cargo build --release --locked
+    cd ..
+
+    log_success "Build complete"
+}
+
+# ── Install files ────────────────────────────────────────────────────
+install_files() {
+    step "Installing files"
+
+    # Install daemon binary
+    $PRIV install -Dm755 daemon/target/release/juhradiald "$BIN_DIR/juhradiald"
+    log_success "Daemon binary"
+
+    # Install overlay scripts
+    $PRIV mkdir -p $SHARE_DIR
+    $PRIV cp -r overlay/*.py $SHARE_DIR/
+    log_success "Overlay scripts"
+
+    # Install flow module (subdirectory)
+    $PRIV cp -r overlay/flow $SHARE_DIR/flow
+    log_success "Flow module"
+
+    # Install locale files
+    if [ -d overlay/locales ]; then
+        $PRIV mkdir -p $SHARE_DIR/locales
+        $PRIV cp -r overlay/locales/* $SHARE_DIR/locales/
+    fi
+
+    # Install 3D radial wheel images
+    $PRIV mkdir -p $SHARE_DIR/assets/radial-wheels
+    $PRIV cp -r assets/radial-wheels/*.png $SHARE_DIR/assets/radial-wheels/
+    log_success "Theme assets"
+
+    # Install device images (mouse illustrations for settings)
+    if [ -d assets/devices ]; then
+        $PRIV mkdir -p $SHARE_DIR/assets/devices
+        $PRIV cp assets/devices/*.png assets/devices/*.svg $SHARE_DIR/assets/devices/ 2>/dev/null || true
+    fi
+
+    # Install AI assistant icons
+    $PRIV cp assets/ai-*.svg $SHARE_DIR/assets/ 2>/dev/null || true
+
+    # Install OS icons (used by Flow easy-switch and device display)
+    $PRIV cp assets/os-*.svg $SHARE_DIR/assets/ 2>/dev/null || true
+
+    # Install Flow indicator image
+    $PRIV cp assets/flow-indicator.png $SHARE_DIR/assets/ 2>/dev/null || true
+
+    # Install generic mouse icon
+    $PRIV cp assets/genericmouse.png $SHARE_DIR/assets/ 2>/dev/null || true
+
+    # Install sidebar navigation icons
+    $PRIV cp assets/nav-*.png $SHARE_DIR/assets/ 2>/dev/null || true
+
+    # Install generated settings artwork
+    if [ -d assets/settings-generated ]; then
+        $PRIV mkdir -p $SHARE_DIR/assets/settings-generated
+        $PRIV cp assets/settings-generated/control-ring.png $SHARE_DIR/assets/settings-generated/ 2>/dev/null || true
+        $PRIV cp assets/settings-generated/easyswitch.png $SHARE_DIR/assets/settings-generated/ 2>/dev/null || true
+        $PRIV cp assets/settings-generated/haptics.png $SHARE_DIR/assets/settings-generated/ 2>/dev/null || true
+    fi
+
+    # Install the Qt/QML settings app (the GTK dashboard stays as fallback for
+    # distros without Qt >= 6.5). tools/ and __pycache__ are not shipped.
+    if [ -d settings-qt ]; then
+        $PRIV rm -rf $SHARE_DIR/settings-qt
+        $PRIV mkdir -p $SHARE_DIR/settings-qt
+        $PRIV cp settings-qt/main.py settings-qt/VERSION $SHARE_DIR/settings-qt/
+        $PRIV cp -r settings-qt/bridge settings-qt/qml settings-qt/assets $SHARE_DIR/settings-qt/
+        $PRIV find $SHARE_DIR/settings-qt -type d -name __pycache__ -exec rm -rf {} +
+        # The overlay resolves wheel skins under $SHARE_DIR/assets/wheels
+        $PRIV mkdir -p $SHARE_DIR/assets
+        $PRIV cp -r settings-qt/assets/wheels $SHARE_DIR/assets/
+        log_success "Qt settings app"
+    fi
+
+    # Install launcher scripts
+    $PRIV install -Dm755 scripts/juhradial-mx.sh "$BIN_DIR/juhradial-mx"
+    $PRIV install -Dm755 scripts/juhradial-settings.sh "$BIN_DIR/juhradial-settings"
+
+    # Install desktop files. ~/.local/bin is not on every desktop's PATH, so a
+    # user-mode entry names the launcher by its full path.
+    local entry
+    for entry in juhradial-mx.desktop org.kde.juhradialmx.settings.desktop; do
+        if [ "$USER_MODE" = "1" ]; then
+            mkdir -p "$APPS_DIR"
+            sed -E "s|^Exec=(juhradial-[a-z]+)|Exec=$BIN_DIR/\1|" "packaging/$entry" > "$APPS_DIR/$entry"
+        else
+            $PRIV install -Dm644 "packaging/$entry" "$APPS_DIR/$entry"
+        fi
+    done
+
+    # Install icons
+    $PRIV install -Dm644 assets/juhradial-mx.svg "$ICON_DIR/juhradial-mx.svg"
+    log_success "Desktop integration"
+
+    # Install systemd service (a user-mode daemon lives in ~/.local/bin)
+    mkdir -p "$SYSTEMD_USER_DIR"
+    if [ "$USER_MODE" = "1" ]; then
+        sed "s|^ExecStart=/usr/local/bin/juhradiald|ExecStart=%h/.local/bin/juhradiald|" \
+            packaging/systemd/juhradialmx-daemon.service > "$SYSTEMD_USER_DIR/juhradialmx-daemon.service"
+    else
+        cp packaging/systemd/juhradialmx-daemon.service "$SYSTEMD_USER_DIR/"
+    fi
+
+    # Install/update udev rules (always update to fix security issues in older versions)
+    if [ -f packaging/udev/99-juhradialmx.rules ]; then
+        sudo install -Dm644 packaging/udev/99-juhradialmx.rules /etc/udev/rules.d/
+        [ -f /etc/udev/rules.d/99-logitech-hidpp.rules ] && sudo rm -f /etc/udev/rules.d/99-logitech-hidpp.rules
+
+        # /dev/uinput access: ydotool (Wayland shortcut + thumb-wheel injection)
+        # and the daemon's own virtual input device both need it, but stock
+        # distros ship /dev/uinput as root:root 0600. Install the uaccess rule
+        # (grants the logged-in user) and make sure the module is loaded.
+        if [ -f packaging/udev/60-ydotool-uinput.rules ]; then
+            sudo install -Dm644 packaging/udev/60-ydotool-uinput.rules /etc/udev/rules.d/
+        fi
+        echo uinput | sudo tee /etc/modules-load.d/juhradial-uinput.conf >/dev/null
+        sudo modprobe uinput 2>/dev/null || true
+
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger
+        # Re-apply MODE/GROUP to ALREADY-PRESENT nodes. A plain `udevadm trigger`
+        # emits "change" events, which do not reliably re-run node permission
+        # assignment for existing hidraw/input devices (systemd#31970). An
+        # explicit "add" action scoped to these subsystems forces the new
+        # root:input 0660 grant onto a mouse that was already connected before
+        # the rules were (re)installed — the Bluetooth /dev/hidraw* case in #52.
+        sudo udevadm trigger --action=add --subsystem-match=hidraw --subsystem-match=input
+        log_success "udev rules"
+
+        # Ensure 'input' group exists and the user is a member (database side).
+        # The udev rules grant access via GROUP="input" MODE="0660"; the daemon's
+        # user must belong to that group to open the hidraw node.
+        if ! getent group input &> /dev/null; then
+            sudo groupadd input
+            log_info "Created 'input' group"
+        elif [ "$ATOMIC" = "1" ] && ! grep -q '^input:' /etc/group; then
+            # Image-based systems keep system groups in /usr/lib/group, which
+            # usermod cannot edit: copy the entry into /etc/group first.
+            grep '^input:' /usr/lib/group | sudo tee -a /etc/group >/dev/null
+        fi
+        if ! id -nG "$USER" | grep -qw input; then
+            sudo usermod -aG input "$USER"
+            log_info "Added $USER to the 'input' group"
+        fi
+        # Group-activation race (#52): the systemd --user manager that starts the
+        # daemon inherits its supplementary groups from PAM at login and CANNOT
+        # gain a freshly added group at runtime (SupplementaryGroups= in a user
+        # unit needs CAP_SETGID, which the unprivileged user manager lacks). So if
+        # THIS login session's own credentials don't include 'input' yet, the
+        # daemon will hit EACCES on /dev/hidraw* until a reboot or full re-login.
+        # `id -nG` (no user arg) reports the live process credentials, unlike
+        # `id -nG "$USER"` which is a database lookup that already shows the group.
+        if ! id -nG | grep -qw input; then
+            GROUP_ACTIVATION_PENDING=1
+            log_warning "'input' group is not active in this session yet (see notice below)"
+        fi
+    fi
+
+    # Create config directory
+    mkdir -p "$CONFIG_DIR"
+}
+
+# ── Systemd service ─────────────────────────────────────────────────
+setup_ydotoold() {
+    # Keyboard-shortcut button actions and thumb-wheel actions (volume, zoom,
+    # copy, etc.) are injected through the kernel uinput device via ydotool,
+    # which is the reliable path on Wayland (xdotool cannot drive native Wayland
+    # windows). ydotool needs its background daemon, ydotoold, running.
+    if ! command -v ydotoold &> /dev/null; then
+        log_warning "ydotoold not found: shortcut/thumb-wheel actions may not work on Wayland"
+        return 0
+    fi
+    if ! command -v systemctl &> /dev/null; then
+        return 0
+    fi
+
+    # Prefer a packaged user service if the distro ships one.
+    local pkg_svc
+    pkg_svc=$(systemctl --user list-unit-files 2>/dev/null | grep -oE '^ydotool(d)?\.service' | head -1)
+    if [ -n "$pkg_svc" ]; then
+        if systemctl --user enable --now "$pkg_svc" 2>/dev/null; then
+            log_success "ydotoold enabled ($pkg_svc)"
+            return 0
+        fi
+    fi
+
+    # Otherwise install a minimal user service so it autostarts on login.
+    local unit_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+    mkdir -p "$unit_dir"
+    cat > "$unit_dir/ydotoold.service" <<EOF
+[Unit]
+Description=ydotool daemon (virtual input for JuhRadial MX)
+
+[Service]
+ExecStart=$(command -v ydotoold) --socket-path=%t/.ydotool_socket --socket-own=%U:%G
+Restart=always
+
+[Install]
+WantedBy=default.target
+EOF
+    systemctl --user daemon-reload 2>/dev/null
+    if systemctl --user enable --now ydotoold.service 2>/dev/null; then
+        log_success "ydotoold service installed and started"
+    else
+        log_warning "Could not start ydotoold: shortcut/thumb-wheel actions may not work on Wayland"
+    fi
+}
+
+enable_service() {
+    step "Enabling service"
+
+    if ! command -v systemctl &> /dev/null; then
+        log_warning "systemctl not available — skipping"
+        return 0
+    fi
+
+    systemctl --user daemon-reload || log_warning "Failed to reload user systemd"
+    # reenable (not enable): upgrades from <=0.4.0 left a stale symlink in
+    # default.target.wants which caused the issue #67 login loop; reenable
+    # drops all old [Install] symlinks and recreates them for the current
+    # WantedBy=graphical-session.target default.target.
+    systemctl --user reenable juhradialmx-daemon || log_warning "Failed to enable service"
+
+    # ydotoold autostart (kernel-uinput injection for Wayland shortcut actions)
+    setup_ydotoold
+
+    # Restart on upgrade, start on fresh install
+    if [ "$INSTALL_MODE" = "upgrade" ]; then
+        systemctl --user restart juhradialmx-daemon || log_warning "Failed to restart service"
+        log_success "Service restarted"
+    else
+        systemctl --user start juhradialmx-daemon || log_warning "Failed to start service"
+        log_success "Service enabled and started"
+    fi
+}
+
+# ── GNOME extension ──────────────────────────────────────────────────
+configure_gnome() {
+    if [ "$DESKTOP_TYPE" != "gnome" ]; then
+        return 0
+    fi
+
+    log_info "Installing GNOME Shell cursor helper extension..."
+
+    local EXT_UUID="juhradial-cursor@dev.juhlabs.com"
+    local EXT_SRC="$INSTALL_DIR/gnome-extension/$EXT_UUID"
+    local EXT_DEST="$HOME/.local/share/gnome-shell/extensions/$EXT_UUID"
+
+    if [ ! -d "$EXT_SRC" ]; then
+        log_warning "GNOME extension source not found — skipping"
+        return 0
+    fi
+
+    mkdir -p "$EXT_DEST"
+    cp "$EXT_SRC/metadata.json" "$EXT_DEST/"
+    cp "$EXT_SRC/extension.js" "$EXT_DEST/"
+    log_success "Extension files installed"
+
+    # Enable the extension (may fail if GNOME Shell isn't running yet)
+    if command -v gnome-extensions &> /dev/null; then
+        gnome-extensions enable "$EXT_UUID" 2>/dev/null && \
+            log_success "Extension enabled" || \
+            log_dim "Extension installed but could not enable automatically"
+    fi
+
+    # Check if extension is already active (update scenario) - no restart needed
+    local ext_state
+    ext_state=$(gnome-extensions info "$EXT_UUID" 2>/dev/null | grep -oP '(?<=State: )\S+' || true)
+    if [ "$ext_state" = "ACTIVE" ]; then
+        log_success "Extension is active - no restart needed"
+    else
+        log_warning "Log out and back in for the extension to load (Wayland requires session restart)"
+    fi
+}
+
+# ── Desktop environment ─────────────────────────────────────────────
+install_autostart() {
+    # The overlay (radial menu) is started at login by the juhradial-mx
+    # launcher via XDG autostart, not a systemd unit: a second user service
+    # would race this entry and KDE session restore into duplicate overlays
+    # (issue #60), and units pulling graphical-session.target caused the
+    # issue #67 GNOME login loop. Until now nothing wrote this entry - the
+    # Settings switch defaults to ON without ever writing the file - so the
+    # overlay never started at login on a fresh install (issue #129). The
+    # Settings app maintains the same file afterwards.
+    # The desktop scans $XDG_CONFIG_HOME/autostart, so honor the override for
+    # the entry; config.json is read from where the Settings app writes it
+    # ($HOME/.config/juhradial, same as CONFIG_DIR above).
+    local autostart_dir="${XDG_CONFIG_HOME:-$HOME/.config}/autostart"
+    local autostart_file="$autostart_dir/juhradial-mx.desktop"
+    local user_config="$HOME/.config/juhradial/config.json"
+
+    # Create-if-missing only: an existing entry may carry a DE-level disable
+    # (Hidden=true / X-GNOME-Autostart-enabled=false from the desktop's own
+    # autostart manager) or user edits; the Settings self-heal repairs a
+    # stale Exec, so an upgrade must not clobber the file.
+    if [ -f "$autostart_file" ]; then
+        log_dim "Autostart entry already present — leaving it untouched"
+        return 0
+    fi
+
+    # Respect a user who turned Start at Login off in Settings.
+    if [ -f "$user_config" ] && command -v python3 &> /dev/null; then
+        local enabled
+        enabled=$(python3 - "$user_config" <<'PY' 2>/dev/null
+import json, sys
+try:
+    with open(sys.argv[1], encoding="utf-8") as fh:
+        cfg = json.load(fh)
+    print("off" if cfg.get("app", {}).get("start_at_login", True) is False else "on")
+except Exception:
+    print("on")
+PY
+)
+        if [ "$enabled" = "off" ]; then
+            log_dim "Start at Login is off in Settings — skipping autostart entry"
+            return 0
+        fi
+    fi
+
+    mkdir -p "$autostart_dir"
+    cat > "$autostart_file" <<EOF
+[Desktop Entry]
+Type=Application
+Name=JuhRadial MX
+Comment=Radial menu for Logitech MX Master
+Exec=$BIN_DIR/juhradial-mx
+Icon=juhradial-mx
+Terminal=false
+Categories=Utility;
+X-GNOME-Autostart-enabled=true
+EOF
+    log_success "Login autostart entry written ($autostart_file)"
+}
+
+configure_desktop() {
+    step "Desktop integration"
+
+    configure_hyprland
+    configure_gnome
+    install_autostart
+
+    if [ "$DESKTOP_TYPE" = "hyprland" ]; then
+        log_success "Hyprland window rules configured"
+    elif [ "$DESKTOP_TYPE" = "gnome" ]; then
+        log_success "GNOME cursor helper extension installed"
+    elif [ "$DESKTOP_TYPE" = "cosmic" ]; then
+        log_success "COSMIC detected — cursor position via XWayland"
+    elif [ "$DESKTOP_TYPE" = "kde" ] || [ "$DESKTOP_TYPE" = "sway" ]; then
+        log_success "No extra configuration needed for ${DESKTOP_LABEL}"
+    else
+        log_dim "No desktop-specific configuration applied"
+    fi
+}
+
+# ── Completion ───────────────────────────────────────────────────────
+print_success() {
+    # Read new version from the freshly fetched source
+    local new_version=""
+    if [ -f "$INSTALL_DIR/CHANGELOG.md" ]; then
+        new_version=$(grep -m1 -oP '## \[?\K[0-9]+\.[0-9]+\.[0-9]+[^]\s]*' "$INSTALL_DIR/CHANGELOG.md" 2>/dev/null || echo "")
+    fi
+
+    local version_display=""
+    if [ -n "$new_version" ]; then
+        if [ "$INSTALL_MODE" = "upgrade" ] && [ -n "$INSTALLED_VERSION" ] && [ "$INSTALLED_VERSION" != "$new_version" ]; then
+            version_display=" ${GRAY}${INSTALLED_VERSION} → ${RESET}${WHITE}${new_version}${RESET}"
+        else
+            version_display=" ${WHITE}${new_version}${RESET}"
+        fi
+    fi
+
+    echo ""
+    echo -e "  ${GREEN}${BOLD}╭──────────────────────────────────────────╮${RESET}"
+    echo -e "  ${GREEN}${BOLD}│                                          │${RESET}"
+    if [ "$INSTALL_MODE" = "upgrade" ]; then
+        echo -e "  ${GREEN}${BOLD}│   ✓  JuhRadial MX updated!               │${RESET}"
+    else
+        echo -e "  ${GREEN}${BOLD}│   ✓  JuhRadial MX installed!             │${RESET}"
+    fi
+    echo -e "  ${GREEN}${BOLD}│                                          │${RESET}"
+    echo -e "  ${GREEN}${BOLD}╰──────────────────────────────────────────╯${RESET}"
+    [ -n "$version_display" ] && echo -e "  ${DIM}Version${RESET}${version_display}"
+    echo ""
+    echo -e "  ${BOLD}Getting started${RESET}"
+    echo -e "  ${GRAY}$(printf '%.0s─' {1..48})${RESET}"
+    echo -e "  ${WHITE}1.${RESET}  Run ${CYAN}juhradial-mx${RESET} or find it in your app menu"
+    echo -e "  ${WHITE}2.${RESET}  Hold the ${BOLD}thumb button${RESET} on your MX Master"
+    echo -e "  ${WHITE}3.${RESET}  Right-click the tray icon for ${BOLD}Settings${RESET}"
+    echo ""
+    echo -e "  ${BOLD}Useful commands${RESET}"
+    echo -e "  ${GRAY}$(printf '%.0s─' {1..48})${RESET}"
+    echo -e "  ${DIM}Status${RESET}   systemctl --user status juhradialmx-daemon"
+    echo -e "  ${DIM}Logs${RESET}     journalctl --user -u juhradialmx-daemon -f"
+    echo ""
+    echo -e "  ${GRAY}github.com/JuhLabs/juhradial-mx${RESET}"
+    echo ""
+    echo -e "  ${CYAN}Enjoying JuhRadial MX?${RESET} Leave a ${YELLOW}★${RESET} on GitHub!"
+    echo -e "  ${DIM}Found a bug? Open an issue - we'd love to hear from you.${RESET}"
+    echo ""
+
+    # Group-activation race (#52): the daemon cannot touch the mouse until the
+    # 'input' group is live in the session that runs the systemd --user manager.
+    # This is NOT fixed by `systemctl --user daemon-reload` or by restarting the
+    # service — only a reboot or full log out/in re-runs PAM and re-reads groups.
+    if [ "$GROUP_ACTIVATION_PENDING" = "1" ]; then
+        echo -e "  ${YELLOW}${BOLD}════════════════════════════════════════════════${RESET}"
+        echo -e "  ${YELLOW}${BOLD}  ACTION REQUIRED: REBOOT (or log out and back in)${RESET}"
+        echo -e "  ${YELLOW}${BOLD}════════════════════════════════════════════════${RESET}"
+        echo -e "  ${WHITE}You were just added to the ${BOLD}input${RESET}${WHITE} group, but this login${RESET}"
+        echo -e "  ${WHITE}session is still running without it. The daemon will report${RESET}"
+        echo -e "  ${WHITE}${BOLD}Permission denied${RESET}${WHITE} on /dev/hidraw* (no battery, DPI,${RESET}"
+        echo -e "  ${WHITE}haptics or button actions) until you ${BOLD}reboot${RESET}${WHITE} or fully${RESET}"
+        echo -e "  ${WHITE}log out and back in. A restart of the service is not enough.${RESET}"
+        echo -e "  ${DIM}Verify after reboot: ls -l /dev/hidraw0  → root input, mode 0660${RESET}"
+        echo ""
+    fi
+
+    if [ "$REBOOT_FOR_LAYERS" = "1" ]; then
+        echo -e "  ${YELLOW}${BOLD}  REBOOT to finish: the layered packages are active after it${RESET}"
+        echo ""
+    fi
+    if [ "$USER_MODE" = "1" ] && [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
+        echo -e "  ${DIM}$BIN_DIR is not on your PATH: start it from the app menu, or run $BIN_DIR/juhradial-mx${RESET}"
+        echo ""
+    fi
+
+    # First-time GNOME installers need a session restart for the extension
+    if [ "$INSTALL_MODE" = "install" ] && [ "$DESKTOP_TYPE" = "gnome" ]; then
+        echo -e "  ${YELLOW}${BOLD}════════════════════════════════════════════════${RESET}"
+        echo -e "  ${YELLOW}${BOLD}  FIRST TIME INSTALLERS: LOG OUT AND BACK IN${RESET}"
+        echo -e "  ${YELLOW}${BOLD}  (or restart) to activate the GNOME extension${RESET}"
+        echo -e "  ${YELLOW}${BOLD}════════════════════════════════════════════════${RESET}"
+        echo ""
+    fi
+}
+
+# ── Main ─────────────────────────────────────────────────────────────
+main() {
+    parse_args "$@"
+    print_banner
+    check_root
+    detect_distro
+    check_wayland
+    check_desktop
+    check_existing_install
+    check_logitech_device
+    print_system_info
+
+    if [ "$INSTALL_MODE" = "upgrade" ]; then
+        echo -e "  ${BOLD}Proceed with upgrade?${RESET} ${DIM}[Y/n]${RESET} \c"
+    else
+        echo -e "  ${BOLD}Proceed with installation?${RESET} ${DIM}[Y/n]${RESET} \c"
+    fi
+    REPLY=""
+    if [ "$ASSUME_YES" != "1" ]; then
+        read -n 1 -r < /dev/tty
+    fi
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]] && [[ ! -z $REPLY ]]; then
+        echo ""
+        log_info "Cancelled."
+        exit 0
+    fi
+
+    install_dependencies
+    clone_repo
+    build_project
+    install_files
+    configure_desktop
+    enable_service
+    print_success
+}
+
+main "$@"

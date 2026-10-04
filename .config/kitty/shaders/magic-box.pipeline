@@ -1,0 +1,26 @@
+# magic-box —— 魔盒分形背景（见 magic-box.slang 顶部的署名与移植说明）
+#
+# 单组、单趟、无状态：每像素 10 次迭代（约 10 次开方），比 star-nest 便宜一个数量级。
+# 观感：近黑的深海蓝底 + 淡青细丝，色相随位置缓慢游走，整体缓缓"飞"过去。
+# ⚠ 和另外三个背景互斥，位置见 README 的「顺序与互斥」。
+
+# ── 三个旋钮，都在下面的组里 ──
+# MBOX_STRENGTH  混进背景的强度。原版是整屏不透明；这里默认 0.6（够清楚，白字也读得出来）
+# MBOX_SPEED     相机前进速度（原作 0.05）。0.0 = 完全静止（那就可以把 animation_step 设 0）
+# MBOX_GATE      细丝的门槛：**调小 = 细丝更多**（0.20 满屏都是），
+#                0.34 默认（黑底为主，细丝成条带状），0.42 只剩几缕。
+#
+# 配色、迭代数、缩放、上色带边界、"洋流"起伏都在 shader 里当常量；
+# 其中魔法常数 0.77 决定分形长什么样。
+
+# 声明但不用：让命名纹理在启动时就存在（见 README 里云那个热重载的坑）。
+textures a
+
+startgroup
+    # 10 次迭代很便宜，帧率给足，配合 MBOX_SPEED 才有"飞过去"的连贯感。
+    animation_step 16
+    var float MBOX_STRENGTH 0.60
+    var float MBOX_SPEED 0.05
+    var float MBOX_GATE 0.34
+    shaders magic-box
+endgroup

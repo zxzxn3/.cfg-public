@@ -1,0 +1,103 @@
+// theme: quiet
+// title: 留白 / 极简
+// layout: {"rows": 18, "columns": 52}
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "source": "\"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/assets/frieren_v29_fastfetch_transparent.gif\"",
+    "type": "kitty",
+    "animationFrame": 0,
+    "width": 34,
+    "position": "auto",
+    "padding": {
+      "left": 2,
+      "right": 4,
+      "top": 0
+    }
+  },
+  "display": {
+    "separator": "  ",
+    "key": {
+      "width": 15
+    },
+    "color": {
+      "keys": "38;2;132;174;230",
+      "output": "38;2;219;222;228"
+    },
+    "bar": {
+      "width": 10,
+      "char": {
+        "elapsed": "━",
+        "total": "─"
+      },
+      "border": {
+        "left": "",
+        "right": ""
+      }
+    },
+    "percent": {
+      "type": [
+        "num",
+        "bar"
+      ]
+    }
+  },
+  "modules": [
+    "break",
+    {
+      "type": "title",
+      "format": "{#38;2;132;174;230}{user-name}{#38;2;115;125;142} / {#38;2;132;174;230}{host-name}{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#38;2;115;125;142}────────────────────────────{#}"
+    },
+    "break",
+    {
+      "type": "os",
+      "key": "os",
+      "format": "{pretty-name}"
+    },
+    {
+      "type": "kernel",
+      "key": "kernel"
+    },
+    {
+      "type": "wm",
+      "key": "desktop",
+      "format": "{pretty-name}"
+    },
+    "break",
+    {
+      "type": "cpu",
+      "key": "cpu",
+      "format": "{name}"
+    },
+    {
+      "type": "gpu",
+      "key": "gpu",
+      "format": "{name}"
+    },
+    {
+      "type": "memory",
+      "key": "memory",
+      "format": "{used} / {total}"
+    },
+    {
+      "type": "disk",
+      "key": "disk",
+      "folders": "/",
+      "format": "{size-used} / {size-total}"
+    },
+    "break",
+    {
+      "type": "uptime",
+      "key": "uptime"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "{#38;2;218;189;135}静かな日々  /  quiet days{#}"
+    }
+  ]
+}

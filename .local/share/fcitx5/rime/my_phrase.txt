@@ -1,0 +1,12 @@
+# Rime table
+# coding: utf-8
+#@/db_name	my_phrase.txt
+#@/db_type	tabledb
+#
+# 自定义短语（独立的个人短语表）
+# 以 Tab 分割：词汇<Tab>编码<Tab>权重
+#
+# 编码建议用非完整拼音的自定义串，避免和拼音冲突。
+# 每行三个字段，中间必须是 Tab，不是空格。
+#
+# 本文件之后不要写注释

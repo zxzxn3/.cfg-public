@@ -1,0 +1,20 @@
+# focus-pulse —— 窗口获得焦点时，内容区边缘呼吸一次。
+#
+# 触发条件是「这个 OS 窗口获得键盘焦点」，所以脉动只出现在新聚焦的窗口上；
+# 打字、鼠标移动都不触发。animation_step 16 只在动画那 600ms 里要帧。
+
+# ── 可调参数（这个效果的所有旋钮都在这里）──
+# 最亮时往当前颜色上叠多少。0.05 线性约等于 sRGB 0.24，是很淡的一层。
+var float PULSE_PEAK 0.05
+# 从边缘往里多少像素衰减到没有。
+var float PULSE_BAND_PX 48.0
+# 起手用掉整段动画的比例（0.12 × 600ms ≈ 70ms）。
+var float PULSE_ATTACK 0.12
+
+startgroup
+    animation_start os-window-focus-in
+    animation_stop 600
+    animation_curve linear
+    animation_step 16
+    shaders focus-pulse
+endgroup

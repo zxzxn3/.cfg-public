@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=JuhRadial MX
+Comment=Radial menu for Logitech MX Master
+Exec=/usr/local/bin/juhradial-mx
+Icon=juhradial-mx
+Terminal=false
+Categories=Utility;
+X-GNOME-Autostart-enabled=true

@@ -1,0 +1,404 @@
+# Generated from approved v29 frames; cumulative times in milliseconds.
+frame_count = 125;
+cycle_ms = 11910;
+frame_ids[0] = 0;
+frame_ends[0] = 160;
+frame_ids[1] = 1;
+frame_ends[1] = 200;
+frame_ids[2] = 1;
+frame_ends[2] = 320;
+frame_ids[3] = 2;
+frame_ends[3] = 400;
+frame_ids[4] = 2;
+frame_ends[4] = 480;
+frame_ids[5] = 1;
+frame_ends[5] = 600;
+frame_ids[6] = 1;
+frame_ends[6] = 640;
+frame_ids[7] = 0;
+frame_ends[7] = 800;
+frame_ids[8] = 3;
+frame_ends[8] = 960;
+frame_ids[9] = 0;
+frame_ends[9] = 1000;
+frame_ids[10] = 0;
+frame_ends[10] = 1120;
+frame_ids[11] = 1;
+frame_ends[11] = 1200;
+frame_ids[12] = 1;
+frame_ends[12] = 1280;
+frame_ids[13] = 0;
+frame_ends[13] = 1400;
+frame_ids[14] = 0;
+frame_ends[14] = 1440;
+frame_ids[15] = 1;
+frame_ends[15] = 1600;
+frame_ids[16] = 4;
+frame_ends[16] = 1720;
+frame_ids[17] = 4;
+frame_ends[17] = 1760;
+frame_ids[18] = 5;
+frame_ends[18] = 1840;
+frame_ids[19] = 5;
+frame_ends[19] = 1920;
+frame_ids[20] = 6;
+frame_ends[20] = 1960;
+frame_ids[21] = 6;
+frame_ends[21] = 2080;
+frame_ids[22] = 7;
+frame_ends[22] = 2110;
+frame_ids[23] = 7;
+frame_ends[23] = 2240;
+frame_ids[24] = 6;
+frame_ends[24] = 2260;
+frame_ids[25] = 6;
+frame_ends[25] = 2400;
+frame_ids[26] = 5;
+frame_ends[26] = 2410;
+frame_ids[27] = 5;
+frame_ends[27] = 2560;
+frame_ids[28] = 8;
+frame_ends[28] = 2710;
+frame_ids[29] = 6;
+frame_ends[29] = 2720;
+frame_ids[30] = 5;
+frame_ends[30] = 2880;
+frame_ids[31] = 4;
+frame_ends[31] = 3040;
+frame_ids[32] = 5;
+frame_ends[32] = 3200;
+frame_ids[33] = 6;
+frame_ends[33] = 3360;
+frame_ids[34] = 7;
+frame_ends[34] = 3520;
+frame_ids[35] = 6;
+frame_ends[35] = 3610;
+frame_ids[36] = 8;
+frame_ends[36] = 3680;
+frame_ids[37] = 9;
+frame_ends[37] = 3760;
+frame_ids[38] = 5;
+frame_ends[38] = 3840;
+frame_ids[39] = 6;
+frame_ends[39] = 4000;
+frame_ids[40] = 5;
+frame_ends[40] = 4060;
+frame_ids[41] = 5;
+frame_ends[41] = 4160;
+frame_ids[42] = 4;
+frame_ends[42] = 4210;
+frame_ids[43] = 4;
+frame_ends[43] = 4320;
+frame_ids[44] = 5;
+frame_ends[44] = 4360;
+frame_ids[45] = 5;
+frame_ends[45] = 4480;
+frame_ids[46] = 6;
+frame_ends[46] = 4510;
+frame_ids[47] = 6;
+frame_ends[47] = 4640;
+frame_ids[48] = 7;
+frame_ends[48] = 4660;
+frame_ids[49] = 7;
+frame_ends[49] = 4800;
+frame_ids[50] = 6;
+frame_ends[50] = 4810;
+frame_ids[51] = 6;
+frame_ends[51] = 4960;
+frame_ids[52] = 5;
+frame_ends[52] = 5110;
+frame_ids[53] = 10;
+frame_ends[53] = 5120;
+frame_ids[54] = 11;
+frame_ends[54] = 5280;
+frame_ids[55] = 10;
+frame_ends[55] = 5350;
+frame_ids[56] = 12;
+frame_ends[56] = 5440;
+frame_ids[57] = 13;
+frame_ends[57] = 5600;
+frame_ids[58] = 12;
+frame_ends[58] = 5650;
+frame_ids[59] = 14;
+frame_ends[59] = 5760;
+frame_ids[60] = 15;
+frame_ends[60] = 5920;
+frame_ids[61] = 16;
+frame_ends[61] = 6000;
+frame_ids[62] = 17;
+frame_ends[62] = 6080;
+frame_ids[63] = 8;
+frame_ends[63] = 6240;
+frame_ids[64] = 9;
+frame_ends[64] = 6400;
+frame_ids[65] = 18;
+frame_ends[65] = 6560;
+frame_ids[66] = 19;
+frame_ends[66] = 6580;
+frame_ids[67] = 20;
+frame_ends[67] = 6720;
+frame_ids[68] = 21;
+frame_ends[68] = 6880;
+frame_ids[69] = 20;
+frame_ends[69] = 6980;
+frame_ids[70] = 20;
+frame_ends[70] = 7040;
+frame_ids[71] = 22;
+frame_ends[71] = 7200;
+frame_ids[72] = 23;
+frame_ends[72] = 7360;
+frame_ids[73] = 22;
+frame_ends[73] = 7380;
+frame_ids[74] = 22;
+frame_ends[74] = 7520;
+frame_ids[75] = 20;
+frame_ends[75] = 7560;
+frame_ids[76] = 20;
+frame_ends[76] = 7680;
+frame_ids[77] = 22;
+frame_ends[77] = 7740;
+frame_ids[78] = 22;
+frame_ends[78] = 7840;
+frame_ids[79] = 20;
+frame_ends[79] = 7920;
+frame_ids[80] = 19;
+frame_ends[80] = 8000;
+frame_ids[81] = 24;
+frame_ends[81] = 8100;
+frame_ids[82] = 25;
+frame_ends[82] = 8160;
+frame_ids[83] = 9;
+frame_ends[83] = 8320;
+frame_ids[84] = 8;
+frame_ends[84] = 8350;
+frame_ids[85] = 26;
+frame_ends[85] = 8450;
+frame_ids[86] = 11;
+frame_ends[86] = 8480;
+frame_ids[87] = 27;
+frame_ends[87] = 8550;
+frame_ids[88] = 7;
+frame_ends[88] = 8640;
+frame_ids[89] = 6;
+frame_ends[89] = 8800;
+frame_ids[90] = 5;
+frame_ends[90] = 8960;
+frame_ids[91] = 6;
+frame_ends[91] = 9000;
+frame_ids[92] = 6;
+frame_ends[92] = 9120;
+frame_ids[93] = 5;
+frame_ends[93] = 9140;
+frame_ids[94] = 5;
+frame_ends[94] = 9280;
+frame_ids[95] = 4;
+frame_ends[95] = 9420;
+frame_ids[96] = 4;
+frame_ends[96] = 9440;
+frame_ids[97] = 5;
+frame_ends[97] = 9560;
+frame_ids[98] = 5;
+frame_ends[98] = 9600;
+frame_ids[99] = 6;
+frame_ends[99] = 9700;
+frame_ids[100] = 6;
+frame_ends[100] = 9760;
+frame_ids[101] = 7;
+frame_ends[101] = 9840;
+frame_ids[102] = 7;
+frame_ends[102] = 9920;
+frame_ids[103] = 6;
+frame_ends[103] = 9980;
+frame_ids[104] = 6;
+frame_ends[104] = 10080;
+frame_ids[105] = 5;
+frame_ends[105] = 10120;
+frame_ids[106] = 1;
+frame_ends[106] = 10240;
+frame_ids[107] = 0;
+frame_ends[107] = 10300;
+frame_ids[108] = 0;
+frame_ends[108] = 10400;
+frame_ids[109] = 1;
+frame_ends[109] = 10480;
+frame_ids[110] = 1;
+frame_ends[110] = 10560;
+frame_ids[111] = 2;
+frame_ends[111] = 10660;
+frame_ids[112] = 2;
+frame_ends[112] = 10720;
+frame_ids[113] = 1;
+frame_ends[113] = 10840;
+frame_ids[114] = 1;
+frame_ends[114] = 10880;
+frame_ids[115] = 0;
+frame_ends[115] = 11020;
+frame_ids[116] = 0;
+frame_ends[116] = 11040;
+frame_ids[117] = 3;
+frame_ends[117] = 11200;
+frame_ids[118] = 0;
+frame_ends[118] = 11360;
+frame_ids[119] = 1;
+frame_ends[119] = 11380;
+frame_ids[120] = 1;
+frame_ends[120] = 11520;
+frame_ids[121] = 0;
+frame_ends[121] = 11560;
+frame_ids[122] = 0;
+frame_ends[122] = 11680;
+frame_ids[123] = 1;
+frame_ends[123] = 11840;
+frame_ids[124] = 0;
+frame_ends[124] = 11910;
+# All displays have separate virtual rectangles, so each can fit the portrait
+# independently without letting a larger display crop a smaller one.
+Window.SetBackgroundTopColor(0.0666667, 0.0666667, 0.0666667);
+Window.SetBackgroundBottomColor(0.0666667, 0.0666667, 0.0666667);
+Plymouth.SetRefreshRate(100);
+tick_ms = 0;
+frame_index = 0;
+view_count = 0;
+mode = "normal";
+prompt_text = "";
+entry_text = "";
+message_text = "";
+
+fun fit_text(text, width)
+{
+    local.image = Image.Text(text, 0.96, 0.96, 0.96, 1, "Sans 20");
+    if (local.image.GetWidth() > width)
+        local.image = local.image.Scale(width, Math.Int(local.image.GetHeight() * width / local.image.GetWidth()));
+    return local.image;
+}
+
+fun update_ui()
+{
+    for (local.i = 0; local.i < view_count; local.i++)
+    {
+        local.v = views[local.i];
+        if (mode != "normal")
+        {
+            local.v.panel.SetOpacity(0.94);
+            local.text = fit_text(prompt_text, Math.Int(local.v.width * 0.9));
+            local.v.prompt.SetImage(local.text);
+            local.v.prompt.SetPosition(local.v.x + (local.v.width - local.text.GetWidth()) / 2, local.v.height * 0.80, 101);
+            local.v.prompt.SetOpacity(1);
+            local.text = fit_text(entry_text, Math.Int(local.v.width * 0.9));
+            local.v.entry.SetImage(local.text);
+            local.v.entry.SetPosition(local.v.x + (local.v.width - local.text.GetWidth()) / 2, local.v.height * 0.87, 101);
+            local.v.entry.SetOpacity(1);
+        }
+        else
+        {
+            local.v.panel.SetOpacity(0);
+            local.v.prompt.SetOpacity(0);
+            local.v.entry.SetOpacity(0);
+        }
+        if (message_text != "")
+        {
+            local.text = fit_text(message_text, Math.Int(local.v.width * 0.9));
+            local.v.message.SetImage(local.text);
+            local.v.message.SetPosition(local.v.x + (local.v.width - local.text.GetWidth()) / 2, local.v.height * 0.95 - local.text.GetHeight(), 102);
+            local.v.message.SetOpacity(1);
+        }
+        else local.v.message.SetOpacity(0);
+    }
+}
+
+fun layout()
+{
+    for (local.i = 0; local.i < view_count; local.i++)
+    {
+        views[local.i].portrait.SetOpacity(0);
+        views[local.i].panel.SetOpacity(0);
+        views[local.i].prompt.SetOpacity(0);
+        views[local.i].entry.SetOpacity(0);
+        views[local.i].message.SetOpacity(0);
+    }
+    global.view_count = 0;
+    for (local.i = 0; Window.GetWidth(local.i); local.i++)
+    {
+        local.v = [];
+        local.v.width = Window.GetWidth(local.i);
+        local.v.height = Window.GetHeight(local.i);
+        local.v.x = local.i * 16384;
+        Window.SetX(local.i, local.v.x);
+        Window.SetY(local.i, 0);
+        local.v.size = local.v.width;
+        if (local.v.height < local.v.size) local.v.size = local.v.height;
+        local.v.size = Math.Int(local.v.size);
+        local.v.portrait = Sprite();
+        local.v.portrait.SetPosition(local.v.x + (local.v.width - local.v.size) / 2, (local.v.height - local.v.size) / 2, 0);
+        local.v.last_id = -1;
+        local.v.panel = Sprite(Image("panel.png").Scale(local.v.width, Math.Int(local.v.height * 0.25)));
+        local.v.panel.SetPosition(local.v.x, local.v.height * 0.75, 100);
+        local.v.prompt = Sprite();
+        local.v.entry = Sprite();
+        local.v.message = Sprite();
+        global.views[local.i] = local.v;
+        global.view_count++;
+    }
+    update_ui();
+}
+
+fun paint_frame()
+{
+    local.id = frame_ids[frame_index];
+    for (local.i = 0; local.i < view_count; local.i++)
+    {
+        local.v = views[local.i];
+        if (local.v.last_id != local.id)
+        {
+            # Exact nearest-neighbor assets for the current panel sizes,
+            # including common 2x HiDPI logical sizes. Unknown sizes still fit.
+            if (local.v.size == 800 || local.v.size == 1080 || local.v.size == 1600 || local.v.size == 2160)
+                local.image = Image(local.v.size + "-" + local.id + ".png");
+            else
+                local.image = Image("110-" + local.id + ".png").Scale(local.v.size, local.v.size);
+            local.v.portrait.SetImage(local.image);
+            local.v.portrait.SetOpacity(1);
+            global.views[local.i].last_id = local.id;
+        }
+    }
+}
+
+fun refresh()
+{
+    paint_frame();
+    global.tick_ms += 10;
+    if (tick_ms >= cycle_ms)
+    {
+        global.tick_ms -= cycle_ms;
+        global.frame_index = 0;
+    }
+    while (frame_index < frame_count - 1 && tick_ms >= frame_ends[frame_index]) global.frame_index++;
+}
+fun hotplug() { layout(); paint_frame(); }
+fun normal() { global.mode = "normal"; global.prompt_text = ""; global.entry_text = ""; update_ui(); }
+fun password(prompt, bullets)
+{
+    global.mode = "password";
+    global.prompt_text = prompt;
+    global.entry_text = "";
+    for (local.i = 0; local.i < bullets; local.i++) global.entry_text += "*";
+    update_ui();
+}
+fun question(prompt, entry)
+{
+    global.mode = "question";
+    global.prompt_text = prompt;
+    global.entry_text = entry;
+    update_ui();
+}
+fun message(text) { global.message_text = text; update_ui(); }
+fun hide_message(text) { global.message_text = ""; update_ui(); }
+Plymouth.SetRefreshFunction(refresh);
+Plymouth.SetDisplayHotplugFunction(hotplug);
+Plymouth.SetDisplayNormalFunction(normal);
+Plymouth.SetDisplayPasswordFunction(password);
+Plymouth.SetDisplayQuestionFunction(question);
+Plymouth.SetDisplayMessageFunction(message);
+Plymouth.SetHideMessageFunction(hide_message);
+layout();
+paint_frame();
