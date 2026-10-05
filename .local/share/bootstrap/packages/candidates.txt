@@ -7,46 +7,24 @@
 # --- CachyOS repositories ---
 aria2
 bc
-botsay
-chafa
 claude-code
-cmatrix
-flameshot
 flatpak
-gimp
 gitui
 go
-gparted
-gpu-screen-recorder
-gpu-screen-recorder-notification
-gpu-screen-recorder-ui
 gwenview
 llmfit
-mpvpaper
-neovim
 newsboat
 niri
 octave
-onefetch
-qalculate-qt
 qview
-task
 tk
-vlc
-yazi
-zathura  # 需再装 zathura-pdf-poppler 或 zathura-pdf-mupdf 后端
-zeal
 
 # --- Arch official repositories ---
-blender
 element-desktop
 emacs
 freecad
-ponysay
 qbittorrent
 shellcheck
-steam
-wireshark-qt
 
 # --- chaotic-aur ---
 fsearch
@@ -54,5 +32,4 @@ minecraft-launcher
 
 # --- aur ---
 caelestia-shell
-quickshell-git  # AUR build; cachyos' noctalia-qs also provides this name, so watch the dep resolution
-xunlei-bin  # AUR；私有许可，基于麒麟 DEB 重打包，会拉入 gtk2
+quickshell-git

@@ -42,6 +42,7 @@ fcitx5-inflex-themes-git
 fcitx5-skin-adwaita-dark
 fcitx5-skin-fluentdark-git
 fcitx5-theme-wechat
+flameshot  # superseded by noctalia's screenshot + swash
 foot
 hyprpm
 hyprsunset
@@ -50,7 +51,6 @@ nodejs
 openbsd-netcat
 osdlyrics
 rime-ice-installer
-shader-slang
 showmethekey
 socat
 ttf-comfortaa

@@ -4,9 +4,9 @@
 
 利用 `cfg` 管理配置文件时有如下决策和偏好：
 
-- 源指的是被程序识别的配置，默认配置是一种特殊的源，随程序提供，可能编译进程序；程序识别非默认配置的方式分成单源和多源；在没有可用源或源不满足要求时，程序按自身规则回退到默认配置或无法工作；在默认配置也无法满足时，程序无法工作；源的修改有多种方式，最简单普适的是用户直接修改，这和通过程序专属读写 UI 修改需要区分开来；有些程序支持零侵入（如 `drop-in`）或低侵入（`include/require/source`）的方式来添加源；当存在多个有效源时，程序有不同的合成行为来得到有效配置，包括分级、择取、合并、覆盖；出于让配置改动可见、可控、边界清晰的考虑，有[决策树](#附表a决策树)决定如何管理配置：
+- 源指的是被程序识别的配置，默认配置是一种特殊的源，随程序提供，可能编译进程序；程序识别非默认配置的方式分成单源和多源；在没有可用源或源不满足要求时，程序按自身规则回退到默认配置或无法工作；在默认配置也无法满足时，程序无法工作；源的修改有多种方式，最简单普适的是用户直接修改，这和通过程序专属读写 UI 修改需要区分开来（读写 UI 指除了会修改源以外，还会读取来反馈变更）；有些程序支持零侵入（如 `drop-in`）或低侵入（`include/require/source`）的方式来添加源；当存在多个有效源时，程序有不同的合成行为来得到有效配置，包括分级、择取、合并、覆盖；出于让配置改动可见、可控、边界清晰的考虑，有[决策树](#附表a决策树)决定如何管理配置文件：
 
-  **无满足要求的默认值：**
+  **程序没有提供该源的满足运行的默认值：**
 
   - `.config/hypr/{hyprlock.conf|hypridle.conf}`
   - `.config/fish/functions/*.fish`
@@ -15,6 +15,7 @@
 
   **由读写 UI 管理：**
 
+  - `.config/mimeapps.list` 中的文件关联由 KDE 文件关联设置（`kcmshell6 kcm_filetypes` / `keditfiletype`）读写，协议处理关联另行维护
   - `.config/fcitx5/conf/classicui.conf` 由 `fcitx5-configtool` 管理
   - `.config/hypr/hyprland-gui.lua` 由 `hyprmod` 管理
   - `.config/juhradial/config.json` 由 `juhradial-settings` 管理
@@ -34,7 +35,7 @@
 
 - 配套资源的放置尊重惯例，但这种惯例最好是来自于开发者的。大部分情况都采用就近放置。
 
-文件到位后，按软件要求重新加载、部署或重启，使配置生效。在大部分情况下，`cfg` 希望无需额外初始化，但有少数情况下，例如超出 `cfg` 的管辖范围，又或是出于控制仓库体积、复用上游提供的安装脚本等考虑，在首次部署时需要通过可选脚本来初始化 `cfg` 的工作环境（添加包仓库、安装包、添加预设包、设置 `plymouth` 动画等等）。
+文件到位后，按软件要求重新加载、部署或重启，使配置生效。在大部分情况下，`cfg` 希望无需额外初始化，但有少数情况下，例如超出 `cfg` 的管辖范围，又或是出于控制仓库体积、复用上游提供的安装脚本等考虑，在首次部署时需要通过可选脚本来初始化 `cfg` 的工作环境（添加包仓库、安装包、调整防火墙、添加预设包、设置 `plymouth` 动画等等）。
 
 利用 `cfg` 管理用户脚本项目时有如下偏好：
 
@@ -44,9 +45,9 @@
 
   ```mermaid
   flowchart TD
-    A{"是否存在默认值满足要求？"}
+    A{"程序是否提供了该源的默认值？"}
     A -- 否 --> B["直接管理"]
-    A -- 是 --> C{"是否提供针对所需设置的<br/>专属读写 UI？"}
+    A -- 是 --> C{"是否提供全部或部分设置的<br/>专属读写 UI？"}
 
     C -- 是 --> D["将 UI 管理的源纳入管理"]
     C -- 否 --> E{"能否零侵入地添加源<br/>完成所需改动？"}
@@ -59,6 +60,8 @@
   ```
 
 ## 附表B：配置机制
+
+`.config/mimeapps.list`：用户级 XDG 共享关联配置，默认应用与添加、移除关联各有解析规则，不是整文件替换。没有此文件时仍有满足程序工作要求的回退关联；KDE 文件关联设置（`kcmshell6 kcm_filetypes`，或 `keditfiletype text/plain` 编辑单个类型）可读写其中的文件关联，但未覆盖本次所需的全部协议处理设置。按决策树“全部或部分设置”的 UI 判定，走 A → C → D，将这份共享源纳入管理；未被该 UI 覆盖的协议处理关联另行维护。该文件同时具备无需修改系统源即可添加的用户级覆盖机制，但分类优先采用 UI 分支，无需额外生成脚本。[查找顺序](https://specifications.freedesktop.org/mime-apps/latest/file.html)、[默认应用与回退规则](https://specifications.freedesktop.org/mime-apps/latest/default.html)、[保存源码](https://github.com/KDE/kde-cli-tools/blob/master/keditfiletype/mimetypedata.cpp)
 
 `.config/fastfetch/config.jsonc`：存在多级查找路径，默认读取先找到的可用配置，不自动合并各级文件；用户配置缺少的选项沿用内置默认值，而非系统配置中的值；有配置生成 UI（`fastfetch --gen-config`），不能据此视为持续读写现有配置的设置 UI。[配置说明](https://github.com/fastfetch-cli/fastfetch/wiki/Configuration)、[加载源码](https://github.com/fastfetch-cli/fastfetch/blob/2.69.0/src/fastfetch.c)
 

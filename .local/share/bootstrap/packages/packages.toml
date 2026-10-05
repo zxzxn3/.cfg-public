@@ -42,12 +42,14 @@ packages = [
 ]
 
 [[group]]
-name = "Terminal"
-description = "Terminal emulator and multiplexers."
+name = "Terminal & CLI"
+description = "Emulator, multiplexers, viewers and small CLI tools."
 packages = [
     { name = "kitty-git", note = "replaces the kitty the Hyprland netinstall group brings in" },
     "tmux",
     "zellij",
+    "yazi",
+    "chafa",
     "tree",
     "time",
 ]
@@ -61,16 +63,10 @@ packages = [
 ]
 
 [[group]]
-name = "Mail"
-description = "Mail clients."
+name = "Communication"
+description = "Mail, messengers and IRC."
 packages = [
     { name = "betterbird-bin", note = "Thunderbird rebuild, CachyOS repository only" },
-]
-
-[[group]]
-name = "Chat"
-description = "Messengers and IRC."
-packages = [
     "discord",
     "linuxqq",
     "wechat-universal-bwrap",
@@ -79,12 +75,16 @@ packages = [
 
 [[group]]
 name = "Media & audio"
-description = "Players, the music client and the audio effect stack."
+description = "Players, the music client, the audio effect stack and screen recording."
 packages = [
     "mpv",
+    "vlc",
     "netease-cloud-music-gtk4",
     "easyeffects",
     { name = "lsp-plugins-lv2", note = "optional dependency of easyeffects: EQ, compressor, loudness" },
+    "gpu-screen-recorder",
+    "gpu-screen-recorder-notification",
+    "gpu-screen-recorder-ui",
 ]
 
 [[group]]
@@ -92,10 +92,12 @@ name = "Development"
 description = "Editors, CLIs and coding agents."
 packages = [
     "vscodium",
-    "shader-slang",
+    "neovim",
     "github-cli",
     "lazygit",
     "git-filter-repo",
+    "onefetch",
+    "shader-slang",
     "openai-codex",
     "opencode",
 ]
@@ -107,6 +109,17 @@ packages = [
     "obsidian",
     "zotero",
     "arch-wiki-docs",
+    "zeal",
+    { name = "zathura", note = "PDF viewer; needs a backend such as zathura-pdf-poppler" },
+    { name = "zathura-pdf-poppler", note = "PDF backend for zathura" },
+]
+
+[[group]]
+name = "Graphics"
+description = "Image editing and 3D content."
+packages = [
+    "gimp",
+    "blender",
 ]
 
 [[group]]
@@ -118,9 +131,11 @@ packages = [
 
 [[group]]
 name = "Network"
-description = "Proxy and VPN client."
+description = "Proxy, VPN, download and packet-analysis tools."
 packages = [
     { name = "clash-verge-rev", note = "supersedes the installed clash-verge-rev-bin; pacman will ask to swap it" },
+    "xunlei-bin",
+    "wireshark-qt",
 ]
 
 [[group]]
@@ -148,15 +163,32 @@ description = "Session pieces the Hyprland netinstall group does not bring."
 packages = [
     "hypridle",
     "hyprlock",
+    "mpvpaper",
     { name = "sane-break", note = "AUR; Qt/Wayland break reminder" },
     { name = "hyprmod", note = "AUR" },
 ]
 
 [[group]]
-name = "System"
-description = "The AUR helper. The installer itself needs nothing but Python."
+name = "Utilities"
+description = "Everyday tools that do not belong to another group."
 packages = [
+    "qalculate-qt",
+    { name = "task", note = "Taskwarrior" },
+]
+
+[[group]]
+name = "System"
+description = "Disk tools and the AUR helper. The installer itself needs nothing but Python."
+packages = [
+    "gparted",
     { name = "yay", note = "builds every AUR entry in this list" },
+]
+
+[[group]]
+name = "Games"
+description = "Game launcher and runtime."
+packages = [
+    "steam",
 ]
 
 [[group]]
@@ -164,6 +196,9 @@ name = "Toys"
 description = "Novelty programs. Nothing here is needed."
 packages = [
     "cowsay",
+    "botsay",
+    "ponysay",
+    "cmatrix",
     "lolcat",
     "misfortune",
     "genact",

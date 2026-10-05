@@ -61,6 +61,7 @@ DRY_RUN=1 ./setup/20-rime-ice.sh
 | `10-juhradial-mx.sh` | Bundled upstream JuhRadial MX installer with a local dry-run guard |
 | `20-rime-ice.sh` | Install rime-ice through plum and request Rime deployment |
 | `30-easyeffects-presets.sh` | Install EasyEffects presets without activating one |
+| `40-kdeconnect-ufw.sh` | Allow KDE Connect from `${KDECONNECT_LAN:-192.168.1.0/24}` when ufw is installed |
 | `50-wayvibes-soundpacks.sh` | Install soundpacks under `${WAYVIBES_HOME:-$HOME/wayvibes}/soundpacks` and add the user to `input` |
 | `60-frieren-plymouth.sh` | Install the bundled Plymouth theme on CachyOS with Limine and mkinitcpio |
 

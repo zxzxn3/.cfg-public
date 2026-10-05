@@ -104,7 +104,7 @@
   },
   "pointer": {
     "speed": 16,
-    "acceleration": true,
+    "acceleration": false,
     "dpi": 6400,
     "dpi_presets": [
       800,
@@ -145,7 +145,10 @@
     "onboarding": {
       "ring": true
     },
-    "onboarding_done": true
+    "onboarding_done": true,
+    "profile_prompted": [
+      "kitty"
+    ]
   },
   "radial": {
     "minimal_mode": false,

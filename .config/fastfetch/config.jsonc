@@ -13,7 +13,7 @@
     "source": "\"${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch/assets/frieren_v29_fastfetch_transparent.gif\"",
     "animationFrame": 0,
     "position": "left",
-    "width": 32,
+    "width": 30,
     "padding": { "left": 34, "right": 0, "top": 11, "bottom": 0 }
   },
 
